@@ -1,0 +1,234 @@
+.wrap {
+    --panel: #1f2430;
+    --ink: #e5e7eb;
+    --muted: #9aa3b2;
+    --line: rgba(255, 255, 255, .08);
+    --blue5: #3b82f6;
+    --blue6: #2563eb;
+    min-height: 100%;
+    display: grid;
+    gap: clamp(20px, 3.5vw, 48px);
+    padding: clamp(16px, 4vw, 48px);
+    background: radial-gradient(120% 120% at 10% 0%, #0f141b 0%, #0b1017 45%, #0a0d12 100%);
+    color: var(--ink);
+}
+
+/* Back home link (matches contact page vibe) */
+.backHomeWrap {
+  max-width: min(1100px, 94vw);
+  margin: 0 auto;
+  padding: 10px 0 6px;
+}
+
+.backHome {
+  display: inline-block;
+  text-decoration: none;
+  font: 700 16px/1.4 Inter, system-ui, sans-serif;
+  color: var(--blue5, #60a5fa);
+  transition: opacity .15s ease;
+}
+.backHome:hover { opacity: .9; }
+
+/* If you want it to only show on mobile, uncomment: */
+
+@media (min-width: 1025px) {
+  .backHomeWrap { display: none; }
+}
+
+/* HERO */
+.hero {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    background: linear-gradient(180deg, #171c2a 0%, #121828 65%, #111726 100%);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: clamp(22px, 5vw, 56px);
+}
+
+.h1 {
+    margin: 0 0 6px;
+    font-size: clamp(30px, 5.2vw, 52px);
+    line-height: 1.1;
+    font-weight: 850;
+}
+
+.fxAccent {
+    background: linear-gradient(90deg, #8b5cf6 0%, var(--blue5) 55%, var(--blue6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.lede {
+    margin: 8px 0 14px;
+    color: var(--muted);
+    font-size: clamp(16px, 2.1vw, 19px);
+    line-height: 1.65;
+}
+
+.ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.heroChild,
+.gridItem {
+    will-change: transform, opacity;
+}
+
+
+.primary,
+.secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid var(--line);
+}
+
+.primary {
+    color: #fff;
+    background: radial-gradient(120% 120% at 30% 20%, var(--blue5) 0%, var(--blue6) 70%);
+}
+
+.primary:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.secondary {
+    color: var(--ink);
+    background: var(--panel);
+}
+
+.secondary:hover {
+    background: #232b36;
+}
+
+/* GRID of features */
+.grid3 {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(12, 1fr);
+}
+
+.grid3 article {
+    grid-column: span 4;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.grid3 h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.grid3 p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+    .grid3 article {
+        grid-column: span 12;
+    }
+}
+
+/* USE CASES */
+.use {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.use h2 {
+    margin: 0 0 8px;
+    font-size: 26px;
+}
+
+.list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+/* PROCESS */
+.process {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+}
+
+.process h2 {
+    margin: 0 0 8px;
+    font-size: 26px;
+}
+
+.steps {
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+}
+
+.steps li {
+    background: #1b2130;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.steps li span {
+    font-weight: 800;
+    margin-right: 8px;
+    color: var(--blue5);
+}
+
+/* BOTTOM CTA */
+.bottomCta {
+    width: min(1000px, 100%);
+    margin: 0 auto;
+    text-align: center;
+    background: linear-gradient(180deg, #171c2a 0%, #121828 65%, #111726 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: clamp(18px, 4vw, 40px);
+    display: flex;
+    flex-direction: column;
+}
+
+.bottomCta h2 {
+    margin: 0 0 6px;
+    font-size: 26px;
+}
+
+.bottomCta p {
+    margin: 0 0 12px;
+    color: var(--muted);
+}
+
+.ctas {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* start elements hidden so GSAP can fade/slide them in */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+}

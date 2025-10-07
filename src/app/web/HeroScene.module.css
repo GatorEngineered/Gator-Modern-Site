@@ -1,0 +1,117 @@
+:root {
+  --hero-solid: #ffffff;   /* main line color */
+  --hero-accent: #7dd3fc;  /* color pop for the second line */
+  --hero-muted: #eaf2ff;   /* default second line color */
+}
+
+.wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding-inline: clamp(8px, 2vw, 24px);
+}
+
+/* we stack the two lines vertically */
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(8px, 1.6vw, 14px);
+  border-radius: 12px;
+}
+
+/* type that always fits inside the hero */
+.phrase {
+  display: block;          /* force each line to its own row */
+  width: 100%;
+  font-weight: 1000;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1.02;
+  font-size: clamp(20px, min(6vw, 6vh), 44px);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  transition: transform 260ms ease, opacity 220ms ease, filter 260ms ease;
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,.55));
+}
+
+/* current line: solid & bright */
+.curr {
+  color: var(--hero-solid) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,.55);
+}
+
+/* next line starts lighter, slides up into place when in "pair" */
+.next {
+  color: var(--hero-muted);
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* reveal second line */
+[data-stage="pair"] .next,
+[data-stage="color"] .next,
+[data-stage="vertical"] .next {
+  opacity: 0.96;
+  transform: translateY(0);
+  color: var(--hero-accent) !important;   /* solid bright color, no gradient */
+  text-shadow: 0 1px 0 rgba(0,0,0,.55);
+  filter: none;
+}
+
+/* when the next line shows up, lift the previous (current) line up & fade it */
+@keyframes liftOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-16px); }
+}
+
+[data-stage="pair"] .curr,
+[data-stage="color"] .curr,
+[data-stage="vertical"] .curr {
+  animation: liftOut 420ms ease forwards;
+}
+
+
+/* color stage for second line (still a solid, just vivid) */
+.nextColor {
+  color: var(--hero-accent) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,.55);
+  filter: none;
+}
+
+/* optional vertical word pinned to the end of line 2 */
+.vertical {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  transform: translateY(-2px);
+  animation: vfade 260ms ease both;
+}
+
+.vertical i {
+  font-style: normal;
+  font-weight: 1000;
+  line-height: 1;
+  font-size: clamp(16px, min(3.8vw, 3.8vh), 34px);
+  color: #ffffff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+@keyframes vfade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(-2px); }
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .phrase, .vertical { transition: none; animation: none; }
+  .next { transform: none !important; opacity: 0.96 !important; }
+}

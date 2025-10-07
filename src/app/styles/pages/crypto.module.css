@@ -1,0 +1,539 @@
+/* =========================================================
+   CRYPTO PAGE THEME
+   - Palette, layout, and reusable tokens
+   =======================================================*/
+.wrap {
+    --panel: #1f2430;
+    --ink: #e5e7eb;
+    --muted: #9aa3b2;
+    --line: rgba(255, 255, 255, .08);
+    --blue5: #3b82f6;
+    --blue6: #2563eb;
+
+    min-height: calc(100svh + var(--footer-gap, 140px));
+    padding: clamp(16px, 4vw, 48px);
+    padding-bottom: var(--footer-gap, 140px);
+    display: grid;
+    gap: clamp(20px, 3.5vw, 48px);
+    background: radial-gradient(120% 120% at 10% 0%, #0f141b 0%, #0b1017 45%, #0a0d12 100%);
+    color: var(--ink);
+    overflow: hidden;
+    padding-inline: clamp(16px, 4vw, 48px);
+}
+
+/* Back home link (matches contact page vibe) */
+.backHomeWrap {
+  max-width: min(1100px, 94vw);
+  margin: 0 auto;
+  padding: 10px 0 6px;
+}
+
+.backHome {
+  display: inline-block;
+  text-decoration: none;
+  font: 700 16px/1.4 Inter, system-ui, sans-serif;
+  color: var(--blue5, #60a5fa);
+  transition: opacity .15s ease;
+}
+.backHome:hover { opacity: .9; }
+
+/* If you want it to only show on mobile, uncomment: */
+
+@media (min-width: 1025px) {
+  .backHomeWrap { display: none; }
+}
+
+/* =========================================================
+   HERO
+   =======================================================*/
+.hero {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    background: linear-gradient(180deg, #171c2a 0%, #121828 65%, #111726 100%);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: clamp(22px, 5vw, 56px);
+}
+
+.hero,
+.explainDeep,
+.grid3,
+.animSection,
+.bottomCta {
+  width: min(1100px, 100%);
+  margin-inline: auto;
+}
+
+.h1 {
+    margin: 0 0 6px;
+    font-size: clamp(30px, 5.2vw, 52px);
+    line-height: 1.1;
+    font-weight: 850;
+}
+
+.fxAccent {
+    background: linear-gradient(90deg, #14b8a6 0%, var(--blue5) 50%, var(--blue6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.lede {
+    margin: 8px 0 14px;
+    color: var(--muted);
+    font-size: clamp(16px, 2.1vw, 19px);
+    line-height: 1.65;
+}
+
+/* CTA buttons */
+.ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.primary,
+.secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid var(--line);
+}
+
+.primary {
+    color: #fff;
+    background: radial-gradient(120% 120% at 30% 20%, var(--blue5) 0%, var(--blue6) 70%);
+}
+
+.primary:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.secondary {
+    color: var(--ink);
+    background: var(--panel);
+}
+
+.secondary:hover {
+    background: #232b36;
+}
+
+/* ===== DEEP EXPLAINER (single long section) ============================== */
+.explainDeep {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    background: #1b2130;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: clamp(18px, 4vw, 42px);
+}
+
+.deepTitle {
+    margin: 0 0 10px;
+    font-size: clamp(24px, 3.2vw, 36px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: .2px;
+    color: var(--ink);
+}
+
+.deepRow {
+    margin: 14px 0;
+}
+
+.deepHeading {
+    margin: 0 0 6px;
+    font-size: clamp(18px, 2.4vw, 24px);
+    font-weight: 800;
+    color: #e8eef8;
+}
+
+.deepLead {
+    margin: 0 0 10px;
+    color: #aeb7c7;
+    line-height: 1.65;
+    font-size: clamp(16px, 2.1vw, 20px);
+}
+
+.deepBody {
+    margin: 0 0 8px;
+    color: #aeb7c7;
+    line-height: 1.65;
+}
+
+.smallNote {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #95a0b3;
+    padding: 12px;
+}
+
+/* gradient accents reused */
+.gxBlue {
+    background: linear-gradient(90deg, var(--blue5) 0%, var(--blue6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.gxTeal {
+    background: linear-gradient(90deg, #14b8a6 0%, var(--blue5) 55%, var(--blue6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+/* “In practice” callout */
+.callout {
+    margin-top: 8px;
+    background: #192234;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+
+.pill {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 12px;
+    color: #fff;
+    background: radial-gradient(120% 120% at 30% 20%, var(--blue5) 0%, var(--blue6) 70%);
+}
+
+.calloutText {
+    margin: 0;
+    color: #b9c2d0;
+}
+
+/* quick compare boxes */
+.compare {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr 1fr;
+    margin: 8px 0;
+}
+
+.compareBox {
+    background: #192234;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 30px;
+    text-align: center;
+}
+
+.kicker {
+    font-size: 13px;
+    color: #aab3c0;
+    margin-bottom: 4px;
+}
+
+.num {
+    font-size: 22px;
+    font-weight: 900;
+    color: #e5e7eb;
+}
+
+.meta {
+    font-size: 12px;
+    color: #93a0b3;
+}
+
+@media (max-width: 900px) {
+    .compare {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* steps timeline */
+.steps {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    background: #192234;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px;
+}
+
+.stepBadge {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    text-align: center;
+    line-height: 34px;
+    color: #fff;
+    font-weight: 900;
+    font-size: 13px;
+    background: radial-gradient(120% 120% at 30% 20%, var(--blue5) 0%, var(--blue6) 70%);
+}
+
+.stepTitle {
+    font-weight: 800;
+    color: #e5e7eb;
+}
+
+.stepText {
+    color: #aeb7c7;
+}
+
+/* reveal perf hint */
+.deepItem {
+    will-change: transform, opacity;
+}
+
+.deepFoot {
+    margin-top: 12px;
+}
+
+.deepFoot p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   FEATURE CARDS (3-up)
+   =======================================================*/
+.grid3 {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(12, 1fr);
+}
+
+.cardItem {
+    grid-column: span 4;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    will-change: transform, opacity;
+}
+
+.grid3 h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.grid3 p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+    .cardItem {
+        grid-column: span 12;
+    }
+}
+
+/* small label above the animation box */
+.sectionLabel {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #9aa3b2;
+}
+
+/* optional: nudge spacing between the anim section and the next grid */
+.animSection {
+    width: min(950px, 100%);
+    height: 60vh;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.animSection+.grid3 {
+    margin-top: 6px;
+}
+
+
+.animMedia { opacity: 0; will-change: transform, opacity; }
+
+/* =========================================================
+   ARC SECTION (curved words + bottom-center image, pinned)
+   =======================================================*/
+.arcSection {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    background: linear-gradient(180deg, #171c2a 0%, #121828 65%, #111726 100%);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: clamp(18px, 4vw, 36px);
+    height: 110vh;
+    /* room for ScrollTrigger pin */
+    overflow: hidden;
+    position: relative;
+}
+
+.arcSceneInner {
+    position: relative;
+    height: 100%;
+}
+
+.arcSvg {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.arcImageWrap {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    opacity: 0;
+    /* GSAP animates first */
+    will-change: transform, opacity;
+}
+
+.arcImage {
+    width: 420px;
+    height: auto;
+    object-fit: contain;
+    opacity: .98;
+}
+
+.animSection img,
+.animSection video,
+.animSection .animImg,
+.ctaArtImg,
+.ctaArtVideo { max-width: 100%; height: auto; display: block; }
+
+@media (max-width: 900px) {
+    .arcSection {
+        height: 120vh;
+    }
+
+    .arcImage {
+        width: 320px;
+    }
+}
+
+
+/* ----- Bottom CTA (grid layout, text left, art right) ----- */
+.bottomCta {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    background: linear-gradient(180deg, #171c2a 0%, #121828 65%, #111726 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: clamp(18px, 4vw, 40px);
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+    gap: clamp(12px, 3vw, 28px);
+    align-items: center;
+    position: relative;
+}
+
+.ctaContent {
+    text-align: left;
+    position: relative;
+    z-index: 2;
+    /* ensure text sits above art */
+}
+
+.bottomCta h2 {
+    margin: 0 0 6px;
+    font-size: clamp(22px, 3.2vw, 32px);
+    font-weight: 900;
+}
+
+.bottomCta p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+/* Right column art */
+.ctaArt {
+    justify-self: end;
+    width: clamp(200px, 32vw, 360px);
+    aspect-ratio: 1 / 1;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    opacity: .24;
+    filter: saturate(0.80);
+
+    /* remove the “grey box” look */
+    mix-blend-mode: screen;
+    /* brightens only light pixels on dark bg */
+    -webkit-mask-image: radial-gradient(60% 60% at 60% 60%, #000 65%, transparent 100%);
+    mask-image: radial-gradient(60% 60% at 60% 60%, #000 65%, transparent 100%);
+}
+
+/* Media inside art */
+.ctaArtVideo,
+.ctaArtImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Reduced motion: still image only */
+.ctaArtStill {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ctaArtVideo {
+        display: none;
+    }
+
+    .ctaArtStill {
+        display: block;
+    }
+}
+
+/* Animate inner items only (Reveal target) */
+.ctaItem {
+    will-change: transform, opacity;
+}
+
+/* Stack on small screens */
+@media (max-width: 900px) {
+    .bottomCta {
+        grid-template-columns: 1fr;
+    }
+
+    .ctaArt {
+        display: none;
+    }
+}
+
+/* hide the vertical pill nav on tablet and below */
+@media (max-width: 1024px) {
+  .pillNavWrap { display: none !important; }
+  .wrap { padding-inline: clamp(16px, 5vw, 32px); }   /* a touch more breathing room */
+  .hero,
+  .explainDeep,
+  .animSection,
+  .bottomCta { border-radius: 16px; } 
+}

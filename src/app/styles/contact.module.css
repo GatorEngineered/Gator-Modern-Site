@@ -1,0 +1,137 @@
+/* Contact form card: near-opaque, no background bleed-through */
+.card {
+  width: min(600px, 100%);
+  margin: 0 auto;
+  background: rgba(20, 23, 30, 0.95);      /* darker, almost solid */
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  display: grid;
+  gap: 18px;
+}
+
+/* Form layout */
+.form { display: grid; gap: 16px; }
+.row  { display: grid; gap: 6px; }
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+/* Fields */
+.input,
+.textarea {
+  width: 97%;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder { color: rgba(255,255,255,0.40); }
+
+.input:hover,
+.textarea:hover { background: rgba(255,255,255,0.10); }
+
+.input:focus,
+.textarea:focus {
+  border-color: rgba(110,168,255,0.9);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 0 3px rgba(110,168,255,0.25);
+}
+
+.textarea { resize: vertical; min-height: 120px; }
+
+/* Yes/No choice row */
+.choices {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  cursor: pointer;
+  user-select: none;
+}
+
+.choice input[type="radio"] {
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  display: grid; place-items: center;
+}
+
+.choice input[type="radio"]::after {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #6ea8ff;
+  transform: scale(0);
+  transition: transform .12s ease;
+}
+
+.choice input[type="radio"]:checked::after { transform: scale(1); }
+
+/* Actions */
+.actions { display: flex; justify-content: flex-end; }
+
+.submit {
+  border: none;
+  background: linear-gradient(180deg, #3a8bff, #246bff); /* Apple-like blue */
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 999px;          /* perfect pill */
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .2px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.submit:hover {
+  background: linear-gradient(180deg, #4a9eff, #2e7cff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+
+.submit:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+
+
+.hp {
+  position: absolute !important;
+  left: -99999px !important;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Small screens */
+@media (max-width: 520px) {
+  .card { padding: 16px; }
+}

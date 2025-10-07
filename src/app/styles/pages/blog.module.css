@@ -1,0 +1,145 @@
+/* page frame */
+.wrap{
+  --maxw: 1200px;
+  width:min(92vw,var(--maxw));
+  margin:0 auto;
+  padding:clamp(40px,6vw,80px) 0;
+}
+
+/* Back home link (matches contact page vibe) */
+.backHomeWrap{
+  /* match the SAME width model as .wrap so they line up */
+  width: min(92vw, var(--maxw));
+  margin: 0 auto clamp(10px, 2.2vw, 16px);   /* bottom spacing only */
+  padding: 6px 0;                             /* no fixed height */
+  text-align: center;                         /* center on all screens */
+  /* remove the debug background: */
+  /* background-color: pink; */
+}
+
+.backHome{
+  display: inline-block;
+  text-decoration: none;
+  font: 700 16px/1.4 Inter, system-ui, sans-serif;
+  color: var(--blue5, #60a5fa);
+  transition: opacity .15s ease;
+}
+.backHome:hover { opacity: .9; }
+
+/* (optional) hide the bar on desktop only */
+@media (min-width: 1025px){
+  .backHomeWrap{ display: none; }
+}
+
+/* BOXED HERO — matches Marketing vibe */
+.card{
+  position:relative;
+  padding:clamp(36px,5.5vw,64px);
+  border-radius:32px;
+  background:
+    radial-gradient(120% 140% at 15% 0%, rgba(78,119,255,.12) 0%, rgba(78,119,255,0) 55%),
+    radial-gradient(120% 140% at 100% 100%, rgba(20,200,200,.10) 0%, rgba(20,200,200,0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* type */
+.h1{
+  margin:0 0 12px;
+  font-weight:900;
+  font-size:clamp(40px,8.5vw,88px);
+  line-height:1.02;
+  letter-spacing:-.02em;
+}
+
+.lede{
+  margin:0 0 clamp(22px,3.5vw,34px);
+  font-size:clamp(16px,2.1vw,22px);
+  line-height:1.6;
+  color:rgba(255,255,255,.82);
+  max-width:900px;
+}
+
+/* gradient title (subtle like “Compounds/AEO”) */
+.fxTitle{
+  background:linear-gradient(180deg,#EAF0FF 0%, #C9D6FF 65%, #BBD1FF 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* gradient accent just on “Coming soon” */
+.fxAccent{
+  background:linear-gradient(90deg,#5B86FF 0%,#2F9BFF 45%,#14C8C8 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* buttons row INSIDE the card */
+.ctaBar{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:14px;
+  max-width:980px;
+}
+
+/* base button */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px 18px;
+  border-radius:16px;
+  font-weight:800;
+  letter-spacing:.01em;
+  text-decoration:none;
+  border:1px solid transparent;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+  color:#fff;
+}
+
+/* bright blue (matches “Start a project”) */
+.primary{
+  background:linear-gradient(180deg,#4F77FF 0%,#2E5BFF 100%);
+  box-shadow:0 12px 26px rgba(47,91,255,.38);
+}
+.primary:hover,.primary:focus-visible{
+  transform:translateY(-1px);
+  box-shadow:0 16px 34px rgba(47,91,255,.48);
+}
+
+/* alt bright (slightly teal-blue for variety) */
+.primaryAlt{
+  background:linear-gradient(180deg,#3EA6FF 0%,#2288F7 100%);
+  box-shadow:0 12px 26px rgba(34,136,247,.34);
+}
+.primaryAlt:hover,.primaryAlt:focus-visible{
+  transform:translateY(-1px);
+  box-shadow:0 16px 34px rgba(34,136,247,.44);
+}
+
+/* charcoal pill (matches “Brand Revival”) */
+.secondary{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.14);
+}
+.secondary:hover,.secondary:focus-visible{
+  background:rgba(255,255,255,.10);
+  border-color:rgba(255,255,255,.24);
+  transform:translateY(-1px);
+}
+
+/* responsive button grid */
+@media (max-width:920px){
+  .ctaBar{ grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:580px){
+  .ctaBar{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:380px){
+  .ctaBar{ grid-template-columns:1fr; }
+}

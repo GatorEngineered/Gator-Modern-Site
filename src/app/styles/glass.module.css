@@ -1,0 +1,104 @@
+/* ===== Glass modal (Apple-like, futuristic) ===== */
+.glassOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 8, 12, .35);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    display: grid;
+    place-items: center;
+    z-index: 50;
+}
+
+.glassPanel {
+    width: min(840px, 92vw);
+    max-height: 80vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background: rgba(17, 20, 28, .75);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 18px;
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 20px 80px rgba(0,0,0,.55);
+    overflow: hidden;
+}
+
+.glassHeader {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+}
+
+.modalLogo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, .25);
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: .3px;
+    color: #e5e7eb;
+    text-align: center;
+}
+
+.modalActions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.showMoreLink {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #e5e7eb;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.showMoreLink:hover {
+    background: rgba(255, 255, 255, .12);
+}
+
+.closeBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, .08);
+    color: #e5e7eb;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.closeBtn:hover {
+    background: rgba(255, 255, 255, .12);
+}
+
+.glassBody {
+    padding: 18px;
+    overflow: auto;
+    color: #e5e7eb;
+}
+
+/* Make click areas feel interactive */
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:focus-visible {
+    outline: 2px solid #6ea8ff;
+    outline-offset: 2px;
+    border-radius: var(--radius);
+}

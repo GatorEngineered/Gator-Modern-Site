@@ -1,42 +1,689 @@
+/* ---------- Buttons ---------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --btn-bg: #ffffff;
+  --btn-fg: #0b1726;
+  --btn-border: rgba(0, 0, 0, .12);
+  --btn-shadow: 0 6px 18px rgba(0, 0, 0, .14);
+  --brand-1: #8ecae6;
+  /* light */
+  --brand-2: #219ebc;
+  /* mid  (your faq-column bg) */
+  --brand-3: #023047;
+  /* dark */
+  --accent-1: #6d28d9;
+  /* purple */
+  --accent-2: #22c55e;
+  /* teal/green */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html body {
+  background: radial-gradient(120% 120% at 10% 0%, #0f141b 0%, #0b1017 45%, #0a0d12 100%);
+height: auto;
+max-height: none;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+.establish-site {
+  height: 98dvh;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.inner-site-grid {
+  display: grid;
+  grid-template-rows: auto auto;
+  width: auto;
+  height: auto;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
+.top-fascia {
+  width: auto;
+  height: 50dvh;
+  position: relative;
+  display: grid;
+  justify-content: center;
+  grid-template-rows: .7fr 1fr 1fr .7fr;
+  color: #e5e7eb;
+
+}
+
+#site-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0 0 8px;
+  font-size: clamp(38px, 6.8vw, 88px);
+  line-height: 1.08;
+  font-weight: 850;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#site-title h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
   margin: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+#site-title #site-tagline {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 500;
+  color: #1a1a1a;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+#site-tagline{
+  background: linear-gradient(90deg, #14b8a6 0%, #3b82f6 55%, #2563eb 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: static;            /* was absolute */
+  display: block;
+  text-align: center;
+  margin-top: 10px;            /* space under title */
+  margin-inline: auto;         /* center within the grid */
+  max-width: 70ch;             /* readable width */
+  line-height: 1.25;
+
+  /* make it notably bigger */
+  font-weight: 700;
+  font-size: clamp(20px, 2.8vw, 34px);
+}
+
+.seamCircle {
+  --circle-fill: #6d28d9;
+  /* change this to any color you like */
+  position: absolute;
+  left: 50%;
+  bottom: -35px;
+  /* hangs below the fascia */
+  transform: translateX(-50%);
+  width: clamp(44px, 5vw, 56px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  /* white outer ring */
+  background: transparent;
+  /* ring only; inner fill comes from ::after */
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* colored inner disk */
+.seamCircle::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  /* inset controls the ring thickness */
+  border-radius: 50%;
+  background: var(--circle-fill);
+}
+
+/* centered + (or change content to any symbol/word) */
+.seamCircle::before {
+  content: "+";
+  position: relative;
+  /* sits above the inner disk */
+  z-index: 1;
+  font-weight: 800;
+  font-size: clamp(18px, 2.2vw, 22px);
+  line-height: 1;
+  color: #ffffff;
+  /* text color */
+}
+
+/* hover/focus states (optional) */
+.seamCircle:hover::after {
+  filter: brightness(1.08);
+}
+
+.seamCircle:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, .85);
+  outline-offset: 3px;
+} 
+
+.bottom-fascia {
+  width: auto;
+  height: 48dvh;
+  display: grid;
+  grid-template-columns: 0.3fr 0.2fr 3px 0.5fr;
+  grid-auto-rows: minmax(min-content, auto);
+  gap: 6px;
+  align-items: start;
+  overflow: hidden;
+}
+
+.contentReels {
+  grid-column: 1;
+  min-height: 48dvh;
+  border-radius: 12px;
+
+}
+
+/* === Reel: make the image fill, dim with overlay, center the label === */
+.contentReels.reel {
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 48dvh;
+  gap: 10px;
+}
+
+.reel-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* <-- fills the orange section height */
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.reel-viewport::after {
+  z-index: 0;
+}
+
+/* clickable area fills the square */
+.reel-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  /* centers the label */
+  text-decoration: none;
+  /* remove underline from the title */
+}
+
+/* the image covers fully (no opacity reduction here) */
+.reel-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* <-- fill the whole viewport */
+  filter: brightness(0.5) grayscale(10%);
+}
+
+.reel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .35);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.reel-arrow.left {
+  left: 12px;
+}
+
+.reel-arrow.right {
+  right: 12px;
+}
+
+/* dots bottom-center */
+.reel-dots.overlay-bottom {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.reel-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, .4);
+}
+
+.reel-dots .dot.active {
+  background: rgba(255, 255, 255, .95);
+}
+
+
+/* the centered label */
+.reel-label {
+  position: relative;
+  /* above overlay */
+  z-index: 1;
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .6);
+}
+
+.faq-column {
+  grid-column: 2;
+  min-height: clamp(260px, 48vh, 640px);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+/* base */
+.btn {
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .55rem .95rem;
+  border-radius: 999px;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: 700;
+  letter-spacing: .2px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: var(--btn-shadow);
+  transition: transform .08s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .18);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .16);
+}
+
+.btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* sizes */
+.btn-sm {
+  padding: .5rem .8rem;
+  font-size: .95rem;
+}
+
+.btn-lg {
+  padding: .8rem 1.15rem;
+  font-size: 1.05rem;
+}
+
+/* variants */
+.btn--light {
+  --btn-bg: #fff;
+  --btn-fg: #0b1726;
+}
+
+.btn--outline {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, .6);
+  box-shadow: none;
+}
+
+.btn--primary {
+  color: #fff;
+  border: 0;
+  background: linear-gradient(135deg, var(--accent-1), #8b5cf6);
+}
+
+.btn--success {
+  color: #0b1726;
+  border: 0;
+  background: linear-gradient(135deg, #a7f3d0, #22c55e);
+}
+
+/* disabled look for “coming soon” */
+.btn[disabled],
+.btn.is-disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn--faq {
+  /* choose the FAQ brand color */
+  --faq-bg: #2a47ff;
+  /* indigo/blue that pops on your navy card */
+  --faq-fg: #ffffff;
+
+  background: var(--faq-bg);
+  color: var(--faq-fg);
+  border: 1px solid var(--faq-bg);
+  /* border = same color as the button */
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+}
+
+/* Hover / focus highlight (FAQ) */
+.btn--faq:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--faq-bg) 35%, transparent),
+    0 12px 26px rgba(0, 0, 0, .22);
+}
+
+.btn--faq:focus-visible {
+  outline: 0;
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--faq-bg) 45%, transparent),
+    0 12px 26px rgba(0, 0, 0, .24);
+}
+
+/* ===== Contact (primary) hover highlight to match style ===== */
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 4px rgba(109, 40, 217, .35),
+    /* purple glow (tailwind violet-700) */
+    0 12px 26px rgba(0, 0, 0, .22);
+}
+
+.btn--primary:focus-visible {
+  outline: 0;
+  box-shadow:
+    0 0 0 5px rgba(109, 40, 217, .45),
+    0 12px 26px rgba(0, 0, 0, .24);
+}
+
+
+/* toolbar inside the FAQ card */
+.faq-column .btnBar {
+  position: static;
+  /* not sticky anymore */
+  flex: 1;
+  /* fill column height */
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  /* 3 equal rows */
+  gap: 14px;
+  padding: 12px;
+  align-items: stretch;
+  /* rows stretch vertically */
+  justify-items: stretch;
+  /* items stretch horizontally */
+}
+
+/* Make buttons fill their grid area (full width + full row height) */
+.faq-column .btn {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  /* big pill but not circular */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .12);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+/* Optional: different looks per button still apply */
+.faq-column .btn--outline {
+  border-color: rgba(255, 255, 255, .7);
+  background: transparent;
+  color: #fff;
+}
+
+.faq-column .btn--primary {
+  color: #fff;
+}
+
+.faq-column .btn.is-disabled {
+  opacity: .6;
+}
+
+
+
+.about-bottom {
+  width: auto;
+  height: 48dvh;
+}
+
+.description {
+  position: relative;
+  border-radius: 12px;
+  min-height: 52dvh;
+  /* padding: top right bottom left (we keep room for the footer rail naturally) */
+  padding: 18px 18px 18px 18px;
+  padding-bottom: 110px;
+  box-sizing: border-box;
+
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  /* left column for image */
+  grid-template-rows: auto 1fr auto;
+  /* headline area, flexible body, footer rail */
+  grid-template-areas:
+    "left right"
+    "left right"
+    "footer footer";
+  gap: 16px;
+  color: #e5e7eb;
+}
+
+.description .desc-left {
+  grid-area: left;
+  align-self: start;
+}
+
+.description .desc-img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .18);
+}
+
+/* RIGHT */
+.description .desc-right {
+  grid-area: right;
+}
+
+.description .copy {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* nudge down so seam button doesn’t cover */
+.description .copy h3 {
+  text-align: center;          /* center the text itself */
+  margin: 0 auto 12px;         /* center the block and keep the bottom space */
+  max-width: 28ch;
+  
+}
+
+.description .copy p {
+  margin: 0 0 10px;
+  line-height: 1.7;
+}
+
+.description .copy .lead {
+  font-size: clamp(1rem, 1.05rem + .2vw, 1.15rem);
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+/* BOTTOM — social rail spans full width at bottom of card */
+.description .desc-footer {
+  grid-area: footer;
+  position: relative;
+  /* lives inside card; no absolute positioning required */
+  left: -12px;
+  right: 8px;
+  width: 99%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: rgba(2, 48, 71, .92);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .18);
+}
+
+/* label + links */
+.description .desc-footer .label {
+  font-weight: 800;
+  white-space: nowrap;
+  opacity: .95;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 6px;
+}
+
+.description .desc-footer .links {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+}
+
+/* pill links with icon + name */
+.description .desc-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform .08s ease, background .18s ease;
+}
+
+.description .desc-footer a:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, .2);
+}
+
+.description .desc-footer a:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.description .desc-footer img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+
+.description .copy {
+  margin-top: 10px;
+}
+
+.description .copy h3 {
+  margin: 0 0 12px;
+}
+
+.description .copy p {
+  margin: 0 0 10px;
+}
+
+.copyright-footer{
+display:flex;
+flex-direction: row;
+color: white;
+
+width:auto;
+justify-content: center;
+align-items: center;
+flex-wrap: wrap;
+}
+
+/* Social rail INSIDE the description (bottom-left on desktop, centered on mobile) */
+
+.socialRail.in-description a:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, .2);
+}
+
+.socialRail.in-description a:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width:394px) {
+
+}
+
+@media (max-width:800px) {
+  .links span{
+    display: none;
   }
 }
+
+@media (min-width: 400px) and (max-width: 490px) {
+  
+}
+
+/* === Mobile & Tablet layout fixes === */
+@media (max-width: 1024px) {
+
+.seamCircle{
+  bottom: -22px;
+}
+
+.bottom-fascia{
+  display: inline-block;
+  overflow: scroll;
+  min-height: 180dvh;
+}
+
+.faq-column{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-column .btnBar {
+    justify-content: space-between;
+  }
+
+  .description{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .desc-footer{
+    display: inline-flex;
+    flex-direction:column;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  
+
+  /* Optional: hide this spacer on small screens */
+  .about-bottom { display: none; }
+}
+
+

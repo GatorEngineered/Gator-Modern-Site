@@ -1,0 +1,94 @@
+:global(html){ scroll-snap-type: y mandatory; }
+:global(body){ scroll-behavior: smooth; }
+
+/* ---- Full-page section snapping ---- */
+.container {
+    /* The scroller */
+    height: auto;
+    overflow-y: visible;
+    scroll-behavior: smooth;
+    /* smooth motion between snaps */
+    scroll-snap-type: y mandatory;
+    /* snap vertically */
+    overscroll-behavior-y: contain;
+    /* avoid rubber-band chaining on iOS */
+    -webkit-overflow-scrolling: touch;
+
+    /* If your left pill nav overlaps, leave room once per-page: */
+    padding-left: var(--pillnav-gutter, 0px);
+}
+
+/* One full “slide” */
+.page {
+    min-height: 100dvh;
+    scroll-snap-type: y mandatory;
+    scroll-snap-align: start;
+    /* snap the top edge into view */
+    scroll-snap-stop: always;
+    /* pause on each slide */
+    display: grid;
+    /* easy centering */
+    align-content: start;
+    /* vertical rhythm for texty slides */
+    gap: clamp(16px, 2.6vh, 32px);
+    padding: clamp(20px, 6vw, 80px);
+}
+
+.pageContent {
+  scroll-snap-align: start;
+  min-height: 100vh;
+  display: flex;
+  align-items: center; /* centers vertically */
+  justify-content: center;
+  padding: 0; /* kill default spacing */
+  margin: 0; /* kill extra whitespace */
+}
+
+/* kill the auto top margin from the first child (e.g., H1) */
+.page > :first-child { margin-top: 0; }
+
+/* Optional themes you can mix & match per slide */
+.themeDark {
+    background: #0f1419;
+    color: #eaf2ff;
+}
+
+.themeInk {
+    background: #0b1117;
+    color: #e8eef6;
+}
+
+.themePurple {
+    background: linear-gradient(180deg, #6d35ff 0%, #5e2bd8 100%);
+    color: #fff;
+}
+
+.themeTeal {
+    background: linear-gradient(180deg, #11b5a6 0%, #028a72 100%);
+    color: #061016;
+}
+
+/* Content helpers (optional) */
+.kicker {
+    opacity: .7;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.h1 {
+    font-size: clamp(32px, 5vw, 64px);
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.lead {
+    font-size: clamp(16px, 1.4vw, 20px);
+    opacity: .9;
+    max-width: 70ch;
+}
+
+.ctaRow {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}

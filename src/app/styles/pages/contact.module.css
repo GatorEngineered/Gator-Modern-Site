@@ -1,0 +1,84 @@
+/* === Contact page === */
+.contactWrap {
+    min-height: 100dvh;
+    background: var(--bg);
+    padding: clamp(16px, 4vw, 32px);
+    display: grid;
+    gap: var(--gap);
+    align-content: start;
+}
+
+.contactHeader {
+    max-width: min(1100px, 94w);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.contactHeader h1 {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    color: #e5e7eb;
+}
+
+.contactHeader p {
+    margin: 0 auto 12px;
+    max-width: 700px;
+    color: #e5e7eb;
+    line-height: 1.55;
+}
+
+.contactBack {
+    display: inline-block;
+    margin-top: 6px;
+    color: #e5e7eb;
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+}
+
+.contactBack:hover {
+    border-bottom-color: var(--blue-400);
+}
+
+.contactCard {
+    width: 100%;
+    max-width: 680px;
+    /* responsive target width */
+    margin: 0 auto;
+    padding: clamp(18px, 3.5vw, 32px);
+    border-radius: var(--radius);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .35);
+    box-sizing: border-box;
+    /* include padding/border in width */
+    overflow: hidden;
+    /* keep inner focus rings/shadows inside */
+    color: #e5e7eb;
+}
+
+.contactThankyou h2 {
+    margin-top: 0;
+    font-size: clamp(20px, 3vw, 28px);
+    color: var(--text);
+}
+
+.contactThankyou p {
+    color: var(--muted);
+}
+
+@media (min-width: 1280px) {
+
+    .contactCard,
+    .contactHeader {
+        max-width: 1160px;
+        /* or 1200px if you prefer */
+    }
+}
+
+@media (min-width: 768px) {
+  .contactCard { max-width: 720px; }
+}
+@media (min-width: 1024px) {
+  .contactCard { max-width: 820px; }
+}
