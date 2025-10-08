@@ -5,6 +5,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+
+
+
+declare global {
+  interface Window {
+    __contactFormOpenedAt?: number;
+  }
+}
+
 
 /* ---------------- Types ---------------- */
 type ModalContactPayload = {
@@ -31,10 +41,7 @@ type ModalKey =
   | "marketing";
 
 /* ---------------- Lazy components ---------------- */
-const Creattie = dynamic(() => import("./components/Creattie"), {
-  ssr: false,
-  loading: () => null,
-});
+
 const GlassModal = dynamic(() => import("./components/GlassModal"), {
   loading: () => null,
 });
@@ -102,7 +109,7 @@ export default function Home() {
 
   // ✅ open/close handlers
   const open = (k: ModalKey) => () => {
-    if (k === "contact") (window as any).__contactFormOpenedAt = Date.now(); // spam guard timing
+    if (k === "contact") window.__contactFormOpenedAt = Date.now(); // spam guard timing
     setModal(k);
   };
   const close = () => setModal(null);
@@ -139,54 +146,53 @@ export default function Home() {
     const active = slides[index];   // <-- paste the return block RIGHT after this line
 
     return (
-      <section
-        className="contentReels reel"
-        role="region"
-        aria-label="Services reel"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
-      >
-        {/* viewport */}
-        <div className="fill reel-viewport" role="img" aria-label={`Showcase: ${active.label}`}>
-          {/* Background image */}
-          <img
-            src={active.img}
-            alt={active.label}
-            className="reel-img"
+  <section
+    className="contentReels reel"
+    role="region"
+    aria-label="Services reel"
+    onMouseEnter={() => setPaused(true)}
+    onMouseLeave={() => setPaused(false)}
+    onFocus={() => setPaused(true)}
+    onBlur={() => setPaused(false)}
+  >
+    <div className="reel-viewport relative">
+      <Image
+        src={active.img}
+        alt=""
+        fill
+        sizes="(max-width: 820px) 100vw, 40vw"
+        style={{ objectFit: "cover" }}
+        priority
+      />
+
+      {/* centered label link */}
+      <Link href={active.href} className="reel-link" aria-label={`Go to ${active.label}`}>
+        <span className="reel-label">{active.label}</span>
+      </Link>
+
+      {/* arrows — now INSIDE the viewport */}
+      <button className="reel-arrow left" onClick={prev} aria-label="Previous">‹</button>
+      <button className="reel-arrow right" onClick={next} aria-label="Next">›</button>
+
+      {/* dots — also INSIDE the viewport */}
+      <div className="reel-dots overlay-bottom" role="tablist" aria-label="Slides">
+        {slides.map((s, i) => (
+          <button
+            key={s.key}
+            role="tab"
+            aria-selected={i === index}
+            aria-label={`Show ${s.label}`}
+            className={`dot ${i === index ? "active" : ""}`}
+            onClick={() => setIndex(i)}
+            tabIndex={i === index ? 0 : -1}
           />
-
-          {/* Centered label link */}
-          <Link href={active.href} className="reel-link" aria-label={`Go to ${active.label}`}>
-            <span className="reel-label">{active.label}</span>
-          </Link>
-
-          {/* ← left arrow */}
-          <button className="reel-arrow left" onClick={prev} aria-label="Previous">‹</button>
-
-          {/* → right arrow */}
-          <button className="reel-arrow right" onClick={next} aria-label="Next">›</button>
-
-          {/* ••• dots bottom-center */}
-          <div className="reel-dots overlay-bottom" role="tablist" aria-label="Slides">
-            {slides.map((s, i) => (
-              <button
-                key={s.key}
-                role="tab"
-                aria-selected={i === index}
-                aria-label={`Show ${s.label}`}
-                className={`dot ${i === index ? "active" : ""}`}
-                onClick={() => setIndex(i)}
-                tabIndex={i === index ? 0 : -1}
-              />
-            ))}
-          </div>
-        </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 
-      </section>
-    );
   }
 
 
@@ -438,7 +444,7 @@ export default function Home() {
             onSubmit={async (data: ModalContactPayload) => {
               // --- light spam guards ---
               if (data?.company || data?.honey) return; // honeypot
-              const openedAt = (window as any).__contactFormOpenedAt ?? Date.now();
+              const openedAt = window.__contactFormOpenedAt ?? Date.now();
               const timeSpentMs = Date.now() - openedAt;
               if (timeSpentMs < 3000) return; // too fast, likely bot
 

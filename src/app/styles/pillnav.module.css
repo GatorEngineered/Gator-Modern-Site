@@ -144,6 +144,6 @@
 .pillItem:hover .pillTooltip { opacity: 1; transform: translateY(-50%) translateX(0); }
 
 /* (Optional) hide the nav on very small screens */
-@media (max-width: 819px){
+@media (max-width: 900px){
   .pillNavWrap { display: none; }
 }

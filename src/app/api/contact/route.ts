@@ -1,6 +1,40 @@
 // app/api/contact/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
+
+type YesNo = "yes" | "no";
+
+interface ContactBody {
+  name: string;
+  message: string;
+  email?: string;
+  phone?: string;
+  hasWebsite?: YesNo;
+  website?: string;
+  source?: string;
+  timeSpentMs?: number;
+  userAgent?: string;
+  page?: string;
+  ip?: string;
+}
+
+interface GraphErrorShape {
+  error: {
+    code?: string;
+    message?: string;
+    innerError?: unknown;
+  };
+}
+
+function isGraphError(x: unknown): x is GraphErrorShape {
+  if (typeof x !== "object" || x === null) return false;
+  const rec = x as Record<string, unknown>;
+  const e = rec.error as unknown;
+  return typeof e === "object" && e !== null;
+}
+
 
 export const runtime = "nodejs";
 
@@ -54,18 +88,19 @@ async function sendEmails({
         throw new Error("SMTP not configured: MS365_SMTP_USER or MS365_SMTP_PASS is missing.");
     }
 
-    const transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure: false, // STARTTLS (587)
-        auth: { user, pass },
-    });
+   const transporter: Transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: false,
+    auth: { user, pass },
+  });
 
     try {
         await transporter.verify(); // tells us immediately if auth/TLS is wrong
-    } catch (e: any) {
-        throw new Error(`SMTP verify failed: ${e?.message || String(e)}`);
-    }
+    } catch (e: unknown) {
+  const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+   throw new Error(`SMTP verify failed: ${msg}`);
+}
 
     try {
         await transporter.sendMail({
@@ -73,10 +108,11 @@ async function sendEmails({
             to: toOwner,
             subject: ownerSubject,
             html: ownerHtml,
-        });
-    } catch (e: any) {
-        throw new Error(`Owner email failed: ${e?.message || String(e)}`);
-    }
+   });
+   } catch (e: unknown) {
+  const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+   throw new Error(`Owner email failed: ${msg}`);
+}
 
     try {
         await transporter.sendMail({
@@ -85,9 +121,10 @@ async function sendEmails({
             subject: senderSubject,
             html: senderHtml,
         });
-    } catch (e: any) {
-        throw new Error(`Sender email failed: ${e?.message || String(e)}`);
-    }
+    } catch (e: unknown) {
+   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+   throw new Error(`Sender email failed: ${msg}`);
+}
 }
 
 /* ------------------------ Excel (Graph, app-only) --------------------- */
@@ -208,7 +245,7 @@ function senderEmailHtml(p: InPayload) {
     </td>`;
 
     // gradient text helper with Outlook/Gmail fallback
-    const grad = (text: string) => `
+     const _grad = (text: string) => `
     <!--[if mso]><span style="color:${C.gradFallback};font-weight:800;">${text}</span><![endif]-->
     <!--[if !mso]><!-- -->
       <span style="
@@ -368,13 +405,11 @@ export async function POST(req: NextRequest) {
                 body?.meta?.page ?? "",
                 ip ?? "",
             ]);
-        } catch (e: any) {
-            console.error("[contact] Excel append failed:", e?.message || e);
-            // While finishing setup, surface the exact reason:
-            return NextResponse.json({ error: "Excel failed", detail: e?.message || String(e) }, { status: 502 });
-            // After it's fixed, switch to non-blocking:
-            // console.error("[contact] Excel append failed:", e); // and continue to emails
-        }
+         } catch (e: unknown) {
+   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+   console.error("[contact] Excel append failed:", msg);
+   return NextResponse.json({ error: "Excel failed", detail: msg }, { status: 502 });
+}
 
         /* --------------------------------- Emails ---------------------------------- */
         const toOwner = process.env.MAIL_TO_OWNER || process.env.MS365_SMTP_USER;
@@ -394,14 +429,18 @@ export async function POST(req: NextRequest) {
                 senderSubject: "🔥 Your Business Deserves the Future — Let’s Build It Together",
                 senderHtml: senderEmailHtml(body),
             });
-        } catch (e: any) {
-            console.error("[contact] email error:", e?.message || e);
-            return NextResponse.json({ error: "Email failed", detail: e?.message || String(e) }, { status: 502 });
-        }
+        } catch (e: unknown) {
+   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+   console.error("[contact] email error:", msg);
+   return NextResponse.json({ error: "Email failed", detail: msg }, { status: 502 });
+}
 
         return NextResponse.json({ ok: true });
-    } catch (e: any) {
-        console.error("[contact] fatal:", e?.message || e);
-        return NextResponse.json({ error: "Bad request" }, { status: 400 });
-    }
+    } catch (e: unknown) {
+   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+   console.error("[contact] fatal:", msg);
+    return NextResponse.json({ error: "Bad request" }, { status: 400 });
 }
+      
+    }
+

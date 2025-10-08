@@ -206,34 +206,56 @@ export default function CryptoPage() {
 
       {/* CTA */}
 
-      <section className={styles.bottomCta}>
+      {/* CTA */}
+<section className={styles.bottomCta}>
+  <div className={styles.ctaContent}>
+    <h2 className={styles.ctaItem}>Ready To Try Crypto?</h2>
+    <p className={styles.ctaItem}>
+      We’ll add it as an option, keep your current checkout, and measure results together.
+    </p>
+    <div className={`${styles.ctas} ${styles.ctaItem}`}>
+      <Link href="/contact" className={styles.primary}>Book A Consultation</Link>
+      <Link href="/marketing" className={styles.secondary}>See Marketing Features</Link>
+    </div>
+  </div>
 
-        <div className={styles.ctaContent}>
-          <h2 className={styles.ctaItem}>Ready To Try Crypto?</h2>
-          <p className={styles.ctaItem}>
-            We’ll add it as an option, keep your current checkout, and measure results together.
-          </p>
-          <div className={`${styles.ctas} ${styles.ctaItem}`}>
-            <Link href="/contact" className={styles.primary}>Book A Consultation</Link>
-            <Link href="/marketing" className={styles.secondary}>See Marketing Features</Link>
-          </div>
-        </div>
+  <div className={styles.ctaArt} aria-hidden="true">
+    {/* Use poster for the still frame; no <img> inside <video> */}
+    <video
+      className={styles.ctaArtVideo}
+      autoPlay
+      muted
+      loop
+      playsInline
+      poster="/animations/cta-orb-poster.jpg"
+    >
+      <source src="/animations/cta-orb.mp4" type="video/mp4" />
+      {/* No <img> fallback in here */}
+    </video>
 
-        <div className={styles.ctaArt} aria-hidden="true">
-          <video
-            className={styles.ctaArtVideo}
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/animations/cta-orb-poster.jpg"
-          >
-            <source src="/animations/cta-orb.mp4" type="video/mp4" />
-            <img src="/animations/cta-orb.gif" alt="" className={styles.ctaArtImg} />
-          </video>
-          <img src="/animations/cta-orb.gif" alt="" className={`${styles.ctaArtImg} ${styles.ctaArtStill}`} />
-        </div>
-      </section>
+    {/* Optimized decorative fallback / still image */}
+    <Image
+      src="/animations/cta-orb.gif"
+      alt=""                 // decorative
+      width={900}
+      height={520}
+      className={`${styles.ctaArtImg} ${styles.ctaArtStill}`}
+      priority
+    />
+
+    {/* (Optional) noscript fallback for users with JS disabled */}
+    <noscript>
+      <Image
+        src="/animations/cta-orb.gif"
+        alt=""
+        width={900}
+        height={520}
+        className={`${styles.ctaArtImg} ${styles.ctaArtStill}`}
+      />
+    </noscript>
+  </div>
+</section>
+
 
 
 

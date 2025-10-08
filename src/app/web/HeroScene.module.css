@@ -12,6 +12,7 @@
   place-items: center;
   overflow: hidden;
   padding-inline: clamp(8px, 2vw, 24px);
+  --hue:285;
 }
 
 /* we stack the two lines vertically */
@@ -51,6 +52,10 @@
   color: var(--hero-muted);
   opacity: 0;
   transform: translateY(10px);
+}
+
+.phrase.next {
+  color: hsl(var(--hue) 80% 60%);
 }
 
 /* reveal second line */

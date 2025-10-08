@@ -160,8 +160,7 @@ export default function Contact({ onSubmit }: Props) {
                                 value="yes"
                                 checked={data.hasWebsite === "yes"}
                                 onChange={() => setHasWebsite("yes")}
-                                aria-controls="website-field"
-                                aria-expanded={data.hasWebsite === "yes"}
+                                aria-controls="website-field"  // keep this
                             />
                             Yes
                         </label>
@@ -178,6 +177,35 @@ export default function Contact({ onSubmit }: Props) {
                     </div>
                     {errors.hasWebsite && <p style={{ color: "#f87171", marginTop: 6 }}>{errors.hasWebsite}</p>}
                 </div>
+
+                {/* Toggleable section (now properly owns aria-expanded) */}
+                <div
+                    id="website-field"
+                    className={styles.row}
+                    hidden={data.hasWebsite !== "yes"}
+                    aria-expanded={data.hasWebsite === "yes"} // moved here
+                >
+                    {data.hasWebsite === "yes" && (
+                        <>
+                            <label className={styles.label} htmlFor="website">Website</label>
+                            <input
+                                id="website"
+                                name="website"
+                                className={styles.input}
+                                placeholder="https://yourdomain.com"
+                                value={data.website}
+                                onChange={change("website")}
+                                autoComplete="url"
+                                inputMode="url"
+                                required
+                                pattern="https?://.+"
+                                aria-invalid={!!errors.website}
+                            />
+                            {errors.website && <p style={{ color: "#f87171", marginTop: 6 }}>{errors.website}</p>}
+                        </>
+                    )}
+                </div>
+
 
                 {data.hasWebsite === "yes" && (
                     <div className={styles.row} id="website-field">

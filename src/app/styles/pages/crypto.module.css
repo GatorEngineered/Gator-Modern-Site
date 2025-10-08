@@ -517,6 +517,16 @@
     will-change: transform, opacity;
 }
 
+@media (max-width: 479px) {
+    .ctaItem{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    
+}
+
 /* Stack on small screens */
 @media (max-width: 900px) {
     .bottomCta {
@@ -526,7 +536,17 @@
     .ctaArt {
         display: none;
     }
+
+    .secondary{
+        margin-top: 5px;
+    }
+
+    .animSection{
+        height:45vh;
+    }
 }
+
+
 
 /* hide the vertical pill nav on tablet and below */
 @media (max-width: 1024px) {

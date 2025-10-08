@@ -1,7 +1,7 @@
 // app/faq/page.tsx
 "use client";
 
-
+import React from "react";
 import { ReactNode, useMemo, useState } from "react";
 import faq from '@/app/styles/pages/faq.module.css'
 
@@ -316,20 +316,34 @@ export default function FAQPage() {
   const [open, setOpen] = useState<Record<string, number | null>>({}); // per-section open index
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return SECTIONS;
-    return SECTIONS.map((sec) => ({
-      ...sec,
-      items: sec.items.filter(
-        (it) =>
-          it.question.toLowerCase().includes(q) ||
-          (typeof it.answer === "string"
-            ? it.answer.toLowerCase().includes(q)
-            : // crude text extraction for JSX answers
-              (it.answer as any)?.props?.children?.toString?.().toLowerCase?.()?.includes(q))
-      ),
-    })).filter((sec) => sec.items.length > 0);
-  }, [search]);
+  const q = search.trim().toLowerCase();
+  if (!q) return SECTIONS;
+
+  return SECTIONS.map((sec) => ({
+    ...sec,
+    items: sec.items.filter((it) => {
+      const inQ = it.question.toLowerCase().includes(q);
+      const ansText = extractText(it.answer).toLowerCase();
+      return inQ || ansText.includes(q);
+    }),
+  })).filter((sec) => sec.items.length > 0);
+}, [search]);
+
+
+  function extractText(node: React.ReactNode): string {
+  if (node == null) return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join("");
+
+  if (React.isValidElement(node)) {
+    // Narrow props and safely read children
+    const { children } = node.props as { children?: React.ReactNode };
+    return extractText(children ?? "");
+  }
+
+  return "";
+}
+
   
   return (
     <div className={faq.fullBleed}>

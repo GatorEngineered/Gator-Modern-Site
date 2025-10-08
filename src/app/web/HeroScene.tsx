@@ -90,7 +90,7 @@ export default function HeroWords() {
     step === 0 && !started ? "single" : step === 1 ? "pair" : step === 2 ? "color" : "vertical";
 
   return (
-    <div ref={wrapRef} className={styles.wrap} aria-label="Rotating brand sayings">
+    <div ref={wrapRef} className={styles.wrap} aria-label="Rotating brand sayings" style={{ ['--hue' as any]: hue }}  >
      <div className={styles.column} data-stage={stage}>
         {/* Line 1 (current) – always stays present when we shift idx */}
         <span className={`${styles.phrase} ${styles.curr}`}>{curr}</span>

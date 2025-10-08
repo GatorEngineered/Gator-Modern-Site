@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { ROUTES } from "@/app/routes";
 import Reveal from "@/app/components/Reveal";
 import styles from "@/app/styles/pages/marketing.module.css";
+
+type CSSVars = React.CSSProperties & {
+  ['--tile-img']?: string;
+};
 
 export const metadata: Metadata = {
   title: "Marketing | Gator Engineered",
@@ -243,7 +246,7 @@ export default function MarketingPage() {
   role="button"
   tabIndex={0}
   data-img
-  style={{ ["--tile-img" as any]: "url(/marketing/announcement.png)" }} // <- use your real filename
+  style={{ ['--tile-img']: 'url(/marketing/announcement.png)' } as CSSVars} // <- use your real filename
 >
       <h5>Launch Announcement</h5>
       <span className={styles.hoverText}>Announce launches with one clear action.</span>
@@ -277,7 +280,7 @@ export default function MarketingPage() {
   role="button"
   tabIndex={0}
   data-img
-  style={{ ["--tile-img" as any]: "url(/marketing/snap.png)" }} // <- add a JPG/PNG to /public/marketing
+  style={{ ['--tile-img']: 'url(/marketing/snap.png)' } as CSSVars} // <- add a JPG/PNG to /public/marketing
 >
       <h5>Case Study Snapshot</h5>
       <span className={styles.hoverText}>Before/after + one strong metric.</span>
@@ -299,7 +302,7 @@ export default function MarketingPage() {
       role="button"
       tabIndex={0}
       data-img
-    style={{ ["--tile-img" as any]: "url(/marketing/customer.png)" }}
+    style={{ ['--tile-img']: 'url(/marketing/customer.png)' } as CSSVars}
       data-hint="Lead magnet: checklist or mini-guide in exchange for an email. Drives steady growth."
     >
       <h5>Mini-Guide</h5>

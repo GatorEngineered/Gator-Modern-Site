@@ -1,4 +1,3 @@
-// app/components/SmoothScroll.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -6,10 +5,8 @@ import Lenis from "lenis";
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Respect reduced motion
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // Avoid native smooth fighting Lenis
     const prev = document.documentElement.style.scrollBehavior;
     document.documentElement.style.scrollBehavior = "auto";
 
@@ -24,9 +21,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       rafId = requestAnimationFrame(loop);
     });
 
-    // Keyboard -> Lenis (capture so nothing else swallows the event)
+    // Typed listener options
+    const addOpts: AddEventListenerOptions = { capture: true, passive: false };
+    const removeOpts: EventListenerOptions = { capture: true };
+
     const onKeyDown = (e: KeyboardEvent) => {
-      // ignore when typing
       const el = document.activeElement as HTMLElement | null;
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) {
         return;
@@ -45,18 +44,18 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         case " ":
           dest = window.scrollY + (e.shiftKey ? -page : page);
           break;
-        default: return; // let other keys pass through
+        default:
+          return;
       }
 
       e.preventDefault();
       lenis.scrollTo(dest);
     };
 
-    // Listen on document, in capture phase, not passive
-    document.addEventListener("keydown", onKeyDown, { capture: true, passive: false });
+    document.addEventListener("keydown", onKeyDown, addOpts);
 
     return () => {
-      document.removeEventListener("keydown", onKeyDown, { capture: true } as any);
+      document.removeEventListener("keydown", onKeyDown, removeOpts); // ✅ no 'any'
       cancelAnimationFrame(rafId);
       lenis.destroy();
       document.documentElement.style.scrollBehavior = prev;
