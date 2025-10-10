@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Reveal from "@/app/components/Reveal";
+import JsonLd from "../components/JsonLd";
 import HeroWords from "./HeroScene";
 import styles from "@/app/styles/pages/web23.module.css";
 
@@ -8,11 +9,29 @@ export const metadata: Metadata = {
   title: "Brand Revival | Gator Engineered",
   description:
     "Brand-first web design for the new internet. Web2 experiences, Web3 ownership, and the story that makes customers care.",
-  alternates: { canonical: "/web" },
+  alternates: { canonical: "https://gatorengineered.com/web" },
   robots: { index: true, follow: true },
 };
 
 export default function WebPage() {
+const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Web Development (React/Next.js)",
+    serviceType: "Web design and development",
+    provider: { "@type": "LocalBusiness", name: "Gator Engineered Technologies" },
+    areaServed: [{ "@type": "State", name: "Florida" }],
+    offers: { "@type": "Offer", priceCurrency: "USD", price: "1999" },
+  } as const;
+
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Web", item: "https://gatorengineered.com/web" },
+    ],
+  } as const;
+
   return (
     <main className={styles.wrap}>
     <div className={styles.backHomeWrap}>
@@ -167,6 +186,8 @@ export default function WebPage() {
           </div>
         </Reveal>
       </section>
+      <JsonLd data={serviceSchema} />
+      <JsonLd data={breadcrumbs} />
     </main>
   );
 }

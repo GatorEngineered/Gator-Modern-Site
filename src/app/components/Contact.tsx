@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import JsonLd from "./JsonLd";
 import styles from "@/app/styles/contact.module.css";
 
 type Props = {
@@ -16,6 +17,11 @@ export default function Contact({ onSubmit }: Props) {
         website: "",
     });
     const [sent, setSent] = useState(false);
+ const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact Gator Engineered Technologies",
+  } as const;
 
     // Lightweight error bag
     const [errors, setErrors] = useState<{
@@ -248,6 +254,7 @@ export default function Contact({ onSubmit }: Props) {
                     </button>
                 </div>
             </form>
+             <JsonLd data={contactSchema} />
         </div>
     );
 }

@@ -1,10 +1,39 @@
 // app/ai/page.tsx
 import Link from "next/link";
 import Script from "next/script";
+import JsonLd from "../components/JsonLd";
+import type { Metadata } from "next";
 import Reveal from "@/app/components/Reveal";
 import styles from "@/app/styles/pages/ai.module.css";
 
+
+export const metadata: Metadata = {
+  title: "AI Chatbots & Automation for Florida Businesses",
+  description:
+    "Capture leads, answer FAQs, and automate follow-up with AI chatbots—integrated into your React/Next.js site.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://gatorengineered.com/ai" },
+};
+
 export default function AiPage() {
+ const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "AI Chatbots & Automation",
+    serviceType: "Artificial Intelligence",
+    provider: { "@type": "LocalBusiness", name: "Gator Engineered Technologies" },
+    areaServed: [{ "@type": "State", name: "Florida" }],
+    offers: { "@type": "Offer", priceCurrency: "USD", price: "1499" },
+  } as const;
+
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "AI", item: "https://gatorengineered.com/ai" },
+    ],
+  } as const;
+
   // --- JSON-LD: Service + FAQ for rich results ---
   const faq = {
     "@context": "https://schema.org",
@@ -54,12 +83,8 @@ export default function AiPage() {
     "serviceType": "AI chatbot development, website automation, lead capture",
     "description":
       "On-brand AI assistants, lead capture, appointment scheduling, and automated follow-ups for small businesses.",
-    "url": "https://your-domain.com/ai"
+    "url": "https://gatorengineered.com/ai"
   };
-
-
-
-
 
 
   return (
@@ -161,6 +186,8 @@ export default function AiPage() {
       <Script id="service-jsonld" type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify(service)}
       </Script>
+      <JsonLd data={serviceSchema} />
+      <JsonLd data={breadcrumbs} />
     </main>
   );
 }

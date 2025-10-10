@@ -1,10 +1,39 @@
 // app/crypto/page.tsx
 import Link from "next/link";
 import Image from "next/image";
+import JsonLd from "../components/JsonLd";
+import type { Metadata } from "next";
 import Reveal from "@/app/components/Reveal";
 import styles from "@/app/styles/pages/crypto.module.css";
 
+export const metadata: Metadata = {
+  title: "Crypto Payments & Web3 Integration in Florida",
+  description:
+    "Accept crypto payments and add Web3 perks—wallet login, token rewards, gated content—set up end to end.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://gatorengineered.com/crypto" },
+};
+
 export default function CryptoPage() {
+
+const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Crypto Payments & Web3 Integration",
+    serviceType: "Web3 / Cryptocurrency",
+    provider: { "@type": "LocalBusiness", name: "Gator Engineered Technologies" },
+    areaServed: [{ "@type": "State", name: "Florida" }],
+    offers: { "@type": "Offer", priceCurrency: "USD", price: "1299" },
+  } as const;
+
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Crypto", item: "https://gatorengineered.com/crypto" },
+    ],
+  } as const;
+
   return (
     <main className={`${styles.wrap} pageWrap`}>
       <div className={styles.backHomeWrap}>
@@ -255,11 +284,8 @@ export default function CryptoPage() {
     </noscript>
   </div>
 </section>
-
-
-
-
-
+<JsonLd data={serviceSchema} />
+      <JsonLd data={breadcrumbs} />
 
     </main>
 
