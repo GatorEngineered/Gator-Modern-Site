@@ -48,7 +48,7 @@ export default function MarketingLayout({
         provider: {
             "@type": "Organization",
             name: "Gator Engineered Technologies",
-            url: "https://your-domain.example", // ← optional; set your real URL
+            url: "https://gatorengineered.com", // ← optional; set your real URL
         },
         hasOfferCatalog: {
             "@type": "OfferCatalog",
@@ -60,7 +60,7 @@ export default function MarketingLayout({
                 { "@type": "Offer", itemOffered: { "@type": "Service", name: "AEO (Answer Engine Optimization)" } },
             ],
         },
-        areaServed: "US",
+        areaServed: "Florida",
     };
 
     return (

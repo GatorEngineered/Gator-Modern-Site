@@ -2,11 +2,13 @@
 "use client";
 
 import React from "react";
+import JsonLd from "../components/JsonLd";
 import { ReactNode, useMemo, useState } from "react";
 import faq from '@/app/styles/pages/faq.module.css'
 
 type QA = { question: string; answer: ReactNode };
 type FAQSection = { title: string; items: QA[] };
+
 
 const SECTIONS: FAQSection[] = [
   {
@@ -311,6 +313,20 @@ const SECTIONS: FAQSection[] = [
 },
 ];
 
+function extractText(node: React.ReactNode): string {
+  if (node == null) return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join("");
+
+  if (React.isValidElement(node)) {
+    const { children } = node.props as { children?: React.ReactNode };
+    return extractText(children ?? "");
+  }
+
+  return "";
+}
+
+
 export default function FAQPage() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<Record<string, number | null>>({}); // per-section open index
@@ -330,19 +346,22 @@ export default function FAQPage() {
 }, [search]);
 
 
-  function extractText(node: React.ReactNode): string {
-  if (node == null) return "";
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(extractText).join("");
+ // Build FAQPage JSON-LD from SECTIONS (declare after SECTIONS + extractText)
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: SECTIONS.flatMap((sec) =>
+    sec.items.map((it) => ({
+      "@type": "Question",
+      name: it.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: extractText(it.answer),
+      },
+    }))
+  ),
+};
 
-  if (React.isValidElement(node)) {
-    // Narrow props and safely read children
-    const { children } = node.props as { children?: React.ReactNode };
-    return extractText(children ?? "");
-  }
-
-  return "";
-}
 
   
   return (
@@ -404,6 +423,7 @@ export default function FAQPage() {
     {filtered.length === 0 && (
       <p className={faq.faqEmpty}>No results. Try different keywords.</p>
     )}
+     <JsonLd data={faqSchema} />
   </main>
   </div>
 );

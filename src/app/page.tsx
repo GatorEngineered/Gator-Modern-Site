@@ -146,51 +146,51 @@ export default function Home() {
     const active = slides[index];   // <-- paste the return block RIGHT after this line
 
     return (
-  <section
-    className="contentReels reel"
-    role="region"
-    aria-label="Services reel"
-    onMouseEnter={() => setPaused(true)}
-    onMouseLeave={() => setPaused(false)}
-    onFocus={() => setPaused(true)}
-    onBlur={() => setPaused(false)}
-  >
-    <div className="reel-viewport relative">
-      <Image
-        src={active.img}
-        alt=""
-        fill
-        sizes="(max-width: 820px) 100vw, 40vw"
-        style={{ objectFit: "cover" }}
-        priority
-      />
-
-      {/* centered label link */}
-      <Link href={active.href} className="reel-link" aria-label={`Go to ${active.label}`}>
-        <span className="reel-label">{active.label}</span>
-      </Link>
-
-      {/* arrows — now INSIDE the viewport */}
-      <button className="reel-arrow left" onClick={prev} aria-label="Previous">‹</button>
-      <button className="reel-arrow right" onClick={next} aria-label="Next">›</button>
-
-      {/* dots — also INSIDE the viewport */}
-      <div className="reel-dots overlay-bottom" role="tablist" aria-label="Slides">
-        {slides.map((s, i) => (
-          <button
-            key={s.key}
-            role="tab"
-            aria-selected={i === index}
-            aria-label={`Show ${s.label}`}
-            className={`dot ${i === index ? "active" : ""}`}
-            onClick={() => setIndex(i)}
-            tabIndex={i === index ? 0 : -1}
+      <section
+        className="contentReels reel"
+        role="region"
+        aria-label="Services reel"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+      >
+        <div className="reel-viewport relative">
+          <Image
+            src={active.img}
+            alt=""
+            fill
+            sizes="(max-width: 820px) 100vw, 40vw"
+            style={{ objectFit: "cover" }}
+            priority
           />
-        ))}
-      </div>
-    </div>
-  </section>
-);
+
+          {/* centered label link */}
+          <Link href={active.href} className="reel-link" aria-label={`Go to ${active.label}`}>
+            <span className="reel-label">{active.label}</span>
+          </Link>
+
+          {/* arrows — now INSIDE the viewport */}
+          <button className="reel-arrow left" onClick={prev} aria-label="Previous">‹</button>
+          <button className="reel-arrow right" onClick={next} aria-label="Next">›</button>
+
+          {/* dots — also INSIDE the viewport */}
+          <div className="reel-dots overlay-bottom" role="tablist" aria-label="Slides">
+            {slides.map((s, i) => (
+              <button
+                key={s.key}
+                role="tab"
+                aria-selected={i === index}
+                aria-label={`Show ${s.label}`}
+                className={`dot ${i === index ? "active" : ""}`}
+                onClick={() => setIndex(i)}
+                tabIndex={i === index ? 0 : -1}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
 
 
   }
@@ -271,11 +271,17 @@ export default function Home() {
 
             {/* LEFT — image */}
             <div className="desc-left" aria-hidden="true">
-              <img
-                src="/animations/new-template-creation.gif"   // <-- drop your image here
-                alt=""
-                className="desc-img"
-              />
+              <Image
+  src="/animations/new-template-creation.gif"
+  alt=""
+  width={800}          // ← use your real GIF width if different
+  height={600}         // ← and real height
+  className="desc-img"
+  priority
+  unoptimized
+/>
+
+
             </div>
 
             {/* RIGHT — text (moved down a bit) */}
@@ -285,12 +291,12 @@ export default function Home() {
               </h3>
               <p>
                 We create websites and applications that go beyond the ordinary—built with the
-  latest tools, designed for performance, and ready for the future of the web.
+                latest tools, designed for performance, and ready for the future of the web.
               </p>
-<p>
-  From blockchain to modern business solutions, our work adapts to your vision
-  and scales with your goals.
-</p>
+              <p>
+                From blockchain to modern business solutions, our work adapts to your vision
+                and scales with your goals.
+              </p>
             </div>
 
             {/* BOTTOM — social rail */}
@@ -354,7 +360,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="https://www.facebook.com/people/Gator-Engineered-Technologies/61575072135764/"
+                    href="https://x.com/GatorEngineered"
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="X"
@@ -381,12 +387,12 @@ export default function Home() {
                   </a>
                 </li>
               </ul>
-              
+
             </aside>
             <p className="copyright-footer">Copyright © 2025 Gator Engineered Technologies</p>
 
           </section>
-          
+
 
 
 
