@@ -1,19 +1,34 @@
 // app/about/page.tsx
 import Link from "next/link";
 import Reveal from "@/app/components/Reveal";
+import JsonLd from "../components/JsonLd";
 import styles from "@/app/styles/about.module.css";
+import type { CSSProperties } from "react";
+
 
 export default function AboutPage() {
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About Gator Engineered Technologies",
+    mainEntity: { "@type": "LocalBusiness", name: "Gator Engineered Technologies" },
+  } as const;
+
+
   return (
-    <main className={styles.heroWrap} style={{ ["--pillnav-gutter" as any]: "10px" }}>
+<main
+  className={styles.heroWrap}
+  style={{ "--pillnav-gutter": "10px" } as CSSProperties}
+>
+
       <div className={styles.backHomeWrap}>
-    <Link href="/" className={styles.backHome}>
-      ← Back home
-    </Link>
-  </div>
+        <Link href="/" className={styles.backHome}>
+          ← Back home
+        </Link>
+      </div>
       <section className={styles.heroCard} aria-label="About Gator Engineered Technologies">
-       
-       {/* HERO: slow, smooth ease */}
+
+        {/* HERO: slow, smooth ease */}
         <Reveal selector=".aboutHeroItem" y={28} duration={1.1} ease="power3.out" stagger={0.12} once>
           <h1 className={`${styles.title} aboutHeroItem`}>
             The next “.com” wave is here.
@@ -79,8 +94,9 @@ export default function AboutPage() {
             </p>
           </div>
         </Reveal>
-        
+
       </section>
+      <JsonLd data={aboutSchema} />
     </main>
   );
 }

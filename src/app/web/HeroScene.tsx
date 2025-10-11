@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./HeroScene.module.css";
+import type { CSSProperties } from "react";
 
 type Stage = "single" | "pair" | "color" | "vertical";
 
@@ -13,6 +14,9 @@ const PHRASES = [
   "Fast By Default",
   "Belonging Builds Loyalty",
 ];
+
+type HueStyle = CSSProperties & { "--hue"?: number };
+
 
 /** Word we optionally stack vertically at the end of line 2 */
 const VERTICAL = ["Ownership", "Access", "Identity", "Trust", "Community"];
@@ -37,6 +41,8 @@ export default function HeroWords() {
   const curr = PHRASES[idx % PHRASES.length];
   const next = PHRASES[(idx + 1) % PHRASES.length];
   const vertWord = useMemo(() => VERTICAL[idx % VERTICAL.length], [idx]);
+
+   const style: HueStyle = { "--hue": hue };
 
   // timings — slower so the second line *lingers*
   const T = reduced
@@ -90,7 +96,7 @@ export default function HeroWords() {
     step === 0 && !started ? "single" : step === 1 ? "pair" : step === 2 ? "color" : "vertical";
 
   return (
-    <div ref={wrapRef} className={styles.wrap} aria-label="Rotating brand sayings" style={{ ['--hue' as any]: hue }}  >
+    <div ref={wrapRef} className={styles.wrap} aria-label="Rotating brand sayings" style={style}  >
      <div className={styles.column} data-stage={stage}>
         {/* Line 1 (current) – always stays present when we shift idx */}
         <span className={`${styles.phrase} ${styles.curr}`}>{curr}</span>

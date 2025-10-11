@@ -54,10 +54,13 @@ max-height: none;
   font-size: clamp(38px, 6.8vw, 88px);
   line-height: 1.08;
   font-weight: 850;
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%);
   -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow:
+      0 1px 0 rgba(0,0,0,.35),
+      0 0 18px rgba(96,165,250,.35);
 }
 
 #site-title h1 {
@@ -73,10 +76,11 @@ max-height: none;
 }
 
 #site-tagline{
-  background: linear-gradient(90deg, #14b8a6 0%, #3b82f6 55%, #2563eb 100%);
+  background: linear-gradient(90deg, #5eead4 0%, #60a5fa 55%, #93c5fd 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+ 
     position: static;            /* was absolute */
   display: block;
   text-align: center;
@@ -484,6 +488,8 @@ max-height: none;
 .description .desc-left {
   grid-area: left;
   align-self: start;
+  position: relative;
+  height: clamp(220px, 38vh, 420px);
 }
 
 .description .desc-img {
@@ -631,7 +637,11 @@ flex-wrap: wrap;
 }
 
 @media (max-width:394px) {
-
+.bottom-fascia{
+  display: inline-block;
+  overflow: scroll;
+  min-height: 186dvh;
+}
 }
 
 @media (max-width:800px) {
@@ -640,21 +650,53 @@ flex-wrap: wrap;
   }
 }
 
-@media (min-width: 400px) and (max-width: 490px) {
-  
+@media (min-width: 400px) and (max-width: 470px) {
+  .bottom-fascia{
+  display: inline-block;
+  overflow: scroll;
+  min-height: 180dvh;
 }
+}
+
+@media (min-width: 471px) and (max-width: 500px) {
+  .bottom-fascia{
+  display: inline-block;
+  overflow: scroll;
+  min-height: 176dvh;
+}
+}
+
+@media (min-width:501px) and (max-width: 820px) {
+  .bottom-fascia{
+  display: inline-block;
+  overflow: scroll;
+  min-height: 170dvh;
+}
+
+.description .desc-left {
+  width: 100%;
+  display: flex;              /* allow centering */
+  justify-content: center;    /* center horizontally */
+  align-items: center;        /* center vertically if the box has height */
+  text-align: center;         /* belt-and-suspenders for inline content */
+  margin-inline: auto;        /* ensure the wrapper itself is centered */
+}
+
+.description .desc-img {
+  margin-inline: auto;        /* center the image if it’s narrower */
+  width: min(500px, 92vw);    /* responsive max width */
+  height: auto;               /* keep aspect ratio */
+  object-fit: contain;        /* no crop on smaller screens */
+}
+
+}
+
 
 /* === Mobile & Tablet layout fixes === */
 @media (max-width: 1024px) {
 
 .seamCircle{
   bottom: -22px;
-}
-
-.bottom-fascia{
-  display: inline-block;
-  overflow: scroll;
-  min-height: 180dvh;
 }
 
 .faq-column{
@@ -673,17 +715,19 @@ flex-wrap: wrap;
     flex-direction: column;
   }
 
-  .desc-footer{
-    display: inline-flex;
-    flex-direction:column;
-    flex-wrap: wrap;
-    overflow: visible;
-  }
+  .description .desc-left {
+  width: 100%;
+  display: flex;              /* allow centering */
+  justify-content: center;    /* center horizontally */
+  align-items: center;        /* center vertically if the box has height */
+  text-align: center;         /* belt-and-suspenders for inline content */
+  margin-inline: auto;        /* ensure the wrapper itself is centered */
+}
 
-  
 
   /* Optional: hide this spacer on small screens */
   .about-bottom { display: none; }
 }
+
 
 

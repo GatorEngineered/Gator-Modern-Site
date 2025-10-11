@@ -11,14 +11,19 @@ interface ContactBody {
   message: string;
   email?: string;
   phone?: string;
-  hasWebsite?: YesNo;
+  hasWebsite?: YesNo | boolean; // you coerce later, so allow boolean or "yes"/"no"
   website?: string;
-  source?: string;
-  timeSpentMs?: number;
-  userAgent?: string;
-  page?: string;
-  ip?: string;
+  honey?: string;               // <-- you read body.honey
+  meta?: {                      // <-- you read body.meta?.*
+    source?: string;
+    ts?: string;
+    timeSpentMs?: number;
+    userAgent?: string;
+    page?: string;
+  };
+  ip?: string;                  // (not required but harmless if you ever pass it around)
 }
+
 
 interface GraphErrorShape {
   error: {
@@ -40,139 +45,139 @@ export const runtime = "nodejs";
 
 /* ------------------------- Types & tiny utils ------------------------- */
 type InPayload = {
-    name?: string;
-    email?: string;
-    message?: string;
-    hasWebsite?: boolean | string;
-    website?: string;
-    honey?: string;
-    meta?: {
-        source?: string;
-        ts?: string;
-        timeSpentMs?: number;
-        userAgent?: string;
-        page?: string;
-    };
+  name?: string;
+  email?: string;
+  message?: string;
+  hasWebsite?: boolean | string;
+  website?: string;
+  honey?: string;
+  meta?: {
+    source?: string;
+    ts?: string;
+    timeSpentMs?: number;
+    userAgent?: string;
+    page?: string;
+  };
 };
 
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function clientIp(req: NextRequest) {
-    const fwd = req.headers.get("x-forwarded-for") ?? "";
-    const rip = req.headers.get("x-real-ip") ?? "";
-    return fwd.split(",")[0]?.trim() || rip || null;
+  const fwd = req.headers.get("x-forwarded-for") ?? "";
+  const rip = req.headers.get("x-real-ip") ?? "";
+  return fwd.split(",")[0]?.trim() || rip || null;
 }
 
 /* ----------------------------- Email (SMTP) --------------------------- */
 async function sendEmails({
-    toOwner,
-    toSender,
-    ownerSubject,
-    ownerHtml,
-    senderSubject,
-    senderHtml,
+  toOwner,
+  toSender,
+  ownerSubject,
+  ownerHtml,
+  senderSubject,
+  senderHtml,
 }: {
-    toOwner: string;
-    toSender: string;
-    ownerSubject: string;
-    ownerHtml: string;
-    senderSubject: string;
-    senderHtml: string;
+  toOwner: string;
+  toSender: string;
+  ownerSubject: string;
+  ownerHtml: string;
+  senderSubject: string;
+  senderHtml: string;
 }) {
-    const host = process.env.MS365_SMTP_HOST || "smtp.office365.com";
-    const port = Number(process.env.MS365_SMTP_PORT || "587");
-    const user = process.env.MS365_SMTP_USER;
-    const pass = process.env.MS365_SMTP_PASS;
+  const host = process.env.MS365_SMTP_HOST || "smtp.office365.com";
+  const port = Number(process.env.MS365_SMTP_PORT || "587");
+  const user = process.env.MS365_SMTP_USER;
+  const pass = process.env.MS365_SMTP_PASS;
 
-    if (!user || !pass) {
-        throw new Error("SMTP not configured: MS365_SMTP_USER or MS365_SMTP_PASS is missing.");
-    }
+  if (!user || !pass) {
+    throw new Error("SMTP not configured: MS365_SMTP_USER or MS365_SMTP_PASS is missing.");
+  }
 
-   const transporter: Transporter = nodemailer.createTransport({
+  const transporter: Transporter = nodemailer.createTransport({
     host,
     port,
     secure: false,
     auth: { user, pass },
   });
 
-    try {
-        await transporter.verify(); // tells us immediately if auth/TLS is wrong
-    } catch (e: unknown) {
-  const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-   throw new Error(`SMTP verify failed: ${msg}`);
-}
+  try {
+    await transporter.verify(); // tells us immediately if auth/TLS is wrong
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+    throw new Error(`SMTP verify failed: ${msg}`);
+  }
 
-    try {
-        await transporter.sendMail({
-            from: `"${process.env.MAIL_FROM_NAME || "Gator Engineered"}" <${user}>`,
-            to: toOwner,
-            subject: ownerSubject,
-            html: ownerHtml,
-   });
-   } catch (e: unknown) {
-  const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-   throw new Error(`Owner email failed: ${msg}`);
-}
+  try {
+    await transporter.sendMail({
+      from: `"${process.env.MAIL_FROM_NAME || "Gator Engineered"}" <${user}>`,
+      to: toOwner,
+      subject: ownerSubject,
+      html: ownerHtml,
+    });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+    throw new Error(`Owner email failed: ${msg}`);
+  }
 
-    try {
-        await transporter.sendMail({
-            from: `"${process.env.MAIL_FROM_NAME || "Gator Engineered Technologies"}" <${user}>`,
-            to: toSender,
-            subject: senderSubject,
-            html: senderHtml,
-        });
-    } catch (e: unknown) {
-   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-   throw new Error(`Sender email failed: ${msg}`);
-}
+  try {
+    await transporter.sendMail({
+      from: `"${process.env.MAIL_FROM_NAME || "Gator Engineered Technologies"}" <${user}>`,
+      to: toSender,
+      subject: senderSubject,
+      html: senderHtml,
+    });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+    throw new Error(`Sender email failed: ${msg}`);
+  }
 }
 
 /* ------------------------ Excel (Graph, app-only) --------------------- */
 async function graphToken() {
-    const tenant = process.env.MS365_TENANT_ID;
-    const clientId = process.env.MS365_CLIENT_ID;
-    const clientSecret = process.env.MS365_CLIENT_SECRET;
-    if (!tenant || !clientId || !clientSecret) {
-        throw new Error("Graph not configured (MS365_TENANT_ID / MS365_CLIENT_ID / MS365_CLIENT_SECRET).");
-    }
-    const params = new URLSearchParams();
-    params.set("client_id", clientId);
-    params.set("client_secret", clientSecret);
-    params.set("grant_type", "client_credentials");
-    params.set("scope", "https://graph.microsoft.com/.default");
+  const tenant = process.env.MS365_TENANT_ID;
+  const clientId = process.env.MS365_CLIENT_ID;
+  const clientSecret = process.env.MS365_CLIENT_SECRET;
+  if (!tenant || !clientId || !clientSecret) {
+    throw new Error("Graph not configured (MS365_TENANT_ID / MS365_CLIENT_ID / MS365_CLIENT_SECRET).");
+  }
+  const params = new URLSearchParams();
+  params.set("client_id", clientId);
+  params.set("client_secret", clientSecret);
+  params.set("grant_type", "client_credentials");
+  params.set("scope", "https://graph.microsoft.com/.default");
 
-    const r = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params.toString(),
-    });
-    if (!r.ok) throw new Error(`Graph token failed: ${r.status} ${await r.text()}`);
-    const j = (await r.json()) as { access_token: string };
-    return j.access_token;
+  const r = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString(),
+  });
+  if (!r.ok) throw new Error(`Graph token failed: ${r.status} ${await r.text()}`);
+  const j = (await r.json()) as { access_token: string };
+  return j.access_token;
 }
 
 async function excelAddRow(values: (string | number | boolean | null)[]) {
-    const upn = process.env.MS365_USER_UPN;         // OneDrive owner (e.g. reva@...onmicrosoft.com)
-    const filePath = process.env.EXCEL_FILE_PATH;   // e.g. "/ContactSubmissions.xlsx"
-    const table = process.env.EXCEL_TABLE_NAME || "Submissions";
-    if (!upn || !filePath) throw new Error("Excel target not configured (MS365_USER_UPN / EXCEL_FILE_PATH).");
+  const upn = process.env.MS365_USER_UPN;         // OneDrive owner (e.g. reva@...onmicrosoft.com)
+  const filePath = process.env.EXCEL_FILE_PATH;   // e.g. "/ContactSubmissions.xlsx"
+  const table = process.env.EXCEL_TABLE_NAME || "Submissions";
+  if (!upn || !filePath) throw new Error("Excel target not configured (MS365_USER_UPN / EXCEL_FILE_PATH).");
 
-    const token = await graphToken();
-    const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
-        upn
-    )}/drive/root:${encodeURI(filePath)}:/workbook/tables('${encodeURIComponent(table)}')/rows/add`;
+  const token = await graphToken();
+  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
+    upn
+  )}/drive/root:${encodeURI(filePath)}:/workbook/tables('${encodeURIComponent(table)}')/rows/add`;
 
-    const r = await fetch(url, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ values: [values] }),
-    });
-    if (!r.ok) throw new Error(`Excel add row failed: ${r.status} ${await r.text()}`);
+  const r = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ values: [values] }),
+  });
+  if (!r.ok) throw new Error(`Excel add row failed: ${r.status} ${await r.text()}`);
 }
 
 /* -------------------------- Email templates --------------------------- */
 function ownerEmailHtml(p: InPayload & { ip: string | null; hasWebsite: boolean }) {
-    return `
+  return `
   <h2>New contact submission</h2>
   <p><strong>Name:</strong> ${p.name ?? ""}</p>
   <p><strong>Email:</strong> ${p.email ?? ""}</p>
@@ -188,38 +193,38 @@ function ownerEmailHtml(p: InPayload & { ip: string | null; hasWebsite: boolean 
 }
 
 function senderEmailHtml(p: InPayload) {
-    const name = p.name || "there";
-    const msg = (p.message ?? "").replace(/\n/g, "<br/>");
+  const name = p.name || "there";
+  const msg = (p.message ?? "").replace(/\n/g, "<br/>");
 
-    // palette (tuned to your site)
-    const C = {
-        card: "#0b1430",
-        card2: "#0e1a3f",
-        text: "#e8f0ff",
-        mute: "#a9b7d3",
-        border: "#23325b",
+  // palette (tuned to your site)
+  const C = {
+    card: "#0b1430",
+    card2: "#0e1a3f",
+    text: "#e8f0ff",
+    mute: "#a9b7d3",
+    border: "#23325b",
 
-        // buttons: dark navy with light text
-        btn: "#102a6b",
-        btnText: "#e6f0ff",
-        btnBorder: "#081c49",
+    // buttons: dark navy with light text
+    btn: "#102a6b",
+    btnText: "#e6f0ff",
+    btnBorder: "#081c49",
 
-        // gradient text (and fallback color for non-supporting clients)
-        gradStart: "#26d0ff",
-        gradEnd: "#6c7cff",
-        gradFallback: "#5fbaff",
-    };
+    // gradient text (and fallback color for non-supporting clients)
+    gradStart: "#26d0ff",
+    gradEnd: "#6c7cff",
+    gradFallback: "#5fbaff",
+  };
 
-    const LINKS = {
-        crypto: "https://gatorengineered.com/services/crypto",
-        web: "https://gatorengineered.com/services/web",
-        ai: "https://gatorengineered.com/services/ai",
-        seo: "https://gatorengineered.com/services/marketing",
-        cta: "https://gatorengineered.com/contact",
-    };
+  const LINKS = {
+    crypto: "https://gatorengineered.com/services/crypto",
+    web: "https://gatorengineered.com/services/web",
+    ai: "https://gatorengineered.com/services/ai",
+    seo: "https://gatorengineered.com/services/marketing",
+    cta: "https://gatorengineered.com/contact",
+  };
 
-    // mobile-safe full-width dark-blue button
-    const btn = (href: string, label: string) => `
+  // mobile-safe full-width dark-blue button
+  const btn = (href: string, label: string) => `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
       <tr>
         <td>
@@ -235,8 +240,8 @@ function senderEmailHtml(p: InPayload) {
       </tr>
     </table>`;
 
-    // service card
-    const card = (title: string, body: string, href: string, label: string) => `
+  // service card
+  const card = (title: string, body: string, href: string, label: string) => `
     <td style="vertical-align:top;background:${C.card};
             border:1px solid ${C.border};border-radius:12px;padding:16px;">
       <div style="font:800 14px/20px Inter,Arial;color:${C.gradFallback};margin-bottom:6px;">${title}</div>
@@ -244,8 +249,8 @@ function senderEmailHtml(p: InPayload) {
       ${btn(href, label)}
     </td>`;
 
-    // gradient text helper with Outlook/Gmail fallback
-     const _grad = (text: string) => `
+  // gradient text helper with Outlook/Gmail fallback
+  const _grad = (text: string) => `
     <!--[if mso]><span style="color:${C.gradFallback};font-weight:800;">${text}</span><![endif]-->
     <!--[if !mso]><!-- -->
       <span style="
@@ -258,7 +263,7 @@ function senderEmailHtml(p: InPayload) {
       </span>
     <!--<![endif]-->`;
 
-    return `
+  return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:0;margin:0;">
     <tr>
       <td align="center" style="padding:24px 14px;">
@@ -266,16 +271,17 @@ function senderEmailHtml(p: InPayload) {
                border-radius:18px;overflow:hidden;border:1px solid ${C.border};">
 
           <!-- Header (solid; matches card) -->
-          <tr>
-            <td style="padding:24px 24px 16px;background:${C.card2};">
-              <div style="font:900 22px/28px Inter,Arial;color:${C.text};letter-spacing:.2px;">
-                Gator Engineered Technologies
-              </div>
-              <div style="font:600 13px/20px Inter,Arial;color:${C.mute};margin-top:6px;">
-                The next evolution of websites — real-time, AI-powered, blockchain-ready.
-              </div>
-            </td>
-          </tr>
+<tr>
+  <td style="padding:24px 24px 16px;background:${C.card2};">
+    <div style="font:900 22px/28px Inter,Arial;color:${C.text};letter-spacing:.2px;">
+      ${_grad("Gator Engineered Technologies")}
+    </div>
+    <div style="font:600 13px/20px Inter,Arial;color:${C.mute};margin-top:6px;">
+      The next evolution of websites — real-time, AI-powered, blockchain-ready.
+    </div>
+  </td>
+</tr>
+
 
           <!-- Intro -->
         <tr>
@@ -314,31 +320,31 @@ function senderEmailHtml(p: InPayload) {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:8px;">
                 <tr>
                 ${card(
-        "Blockchain & Crypto",
-        "Loyalty points as tokens, branded coins, wallet login, and gated experiences.",
-        LINKS.crypto,
-        "Explore Crypto"
-    )}
+    "Blockchain & Crypto",
+    "Loyalty points as tokens, branded coins, wallet login, and gated experiences.",
+    LINKS.crypto,
+    "Explore Crypto"
+  )}
                 ${card(
-        "Websites (Web2 + Web3)",
-        "Creator-grade React/Next builds with optional wallet connect & on-chain perks.",
-        LINKS.web,
-        "See Web Builds"
-    )}
+    "Websites (Web2 + Web3)",
+    "Creator-grade React/Next builds with optional wallet connect & on-chain perks.",
+    LINKS.web,
+    "See Web Builds"
+  )}
                 </tr>
                 <tr>
                 ${card(
-        "AI Chatbots & Automation",
-        "Answer customers 24/7 and automate ops from lead → CRM → follow-up.",
-        LINKS.ai,
-        "Automate With AI"
-    )}
+    "AI Chatbots & Automation",
+    "Answer customers 24/7 and automate ops from lead → CRM → follow-up.",
+    LINKS.ai,
+    "Automate With AI"
+  )}
                 ${card(
-        "SEO + AEO Growth",
-        "Technical SEO + Answer-Engine Optimization to win Google and AI answers.",
-        LINKS.seo,
-        "Grow Traffic"
-    )}
+    "SEO + AEO Growth",
+    "Technical SEO + Answer-Engine Optimization to win Google and AI answers.",
+    LINKS.seo,
+    "Grow Traffic"
+  )}
                 </tr>
             </table>
             </td>
@@ -373,74 +379,83 @@ function senderEmailHtml(p: InPayload) {
 
 /* ------------------------------- Handler ------------------------------ */
 export async function POST(req: NextRequest) {
+  try {
+    const body = (await req.json()) as ContactBody;
+
+
+    // Honeypot
+    if (body?.honey) return NextResponse.json({ ok: true });
+
+    const email = (body?.email ?? "").trim();
+    if (!EMAIL_RX.test(email)) return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+
+    const hasWebsite =
+      typeof body?.hasWebsite === "boolean"
+        ? body.hasWebsite
+        : String(body?.hasWebsite ?? "").toLowerCase() === "yes";
+
+    const ip = clientIp(req);
+
+    /* ---------- Excel logging (TEMP: bubble errors so we can fix fast) ---------- */
     try {
-        const body = (await req.json()) as InPayload;
-
-        // Honeypot
-        if (body?.honey) return NextResponse.json({ ok: true });
-
-        const email = (body?.email ?? "").trim();
-        if (!EMAIL_RX.test(email)) return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-
-        const hasWebsite =
-            typeof body?.hasWebsite === "boolean"
-                ? body.hasWebsite
-                : String(body?.hasWebsite ?? "").toLowerCase() === "yes";
-
-        const ip = clientIp(req);
-
-        /* ---------- Excel logging (TEMP: bubble errors so we can fix fast) ---------- */
-        try {
-            const submittedAt = body?.meta?.ts || new Date().toISOString();
-            await excelAddRow([
-                body?.name ?? "",
-                email,
-                body?.message ?? "",
-                hasWebsite ? "Yes" : "No",
-                body?.website ?? "",
-                submittedAt,
-                body?.meta?.source ?? "",
-                body?.meta?.timeSpentMs ?? "",
-                body?.meta?.userAgent ?? "",
-                body?.meta?.page ?? "",
-                ip ?? "",
-            ]);
-         } catch (e: unknown) {
-   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-   console.error("[contact] Excel append failed:", msg);
-   return NextResponse.json({ error: "Excel failed", detail: msg }, { status: 502 });
-}
-
-        /* --------------------------------- Emails ---------------------------------- */
-        const toOwner = process.env.MAIL_TO_OWNER || process.env.MS365_SMTP_USER;
-        if (!toOwner) {
-            return NextResponse.json(
-                { error: "Email failed", detail: "MAIL_TO_OWNER or MS365_SMTP_USER is not set" },
-                { status: 502 }
-            );
-        }
-
-        try {
-            await sendEmails({
-                toOwner,
-                toSender: email,
-                ownerSubject: `New contact — ${body?.name ?? ""} (${email})`,
-                ownerHtml: ownerEmailHtml({ ...body, ip, hasWebsite }),
-                senderSubject: "🔥 Your Business Deserves the Future — Let’s Build It Together",
-                senderHtml: senderEmailHtml(body),
-            });
-        } catch (e: unknown) {
-   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-   console.error("[contact] email error:", msg);
-   return NextResponse.json({ error: "Email failed", detail: msg }, { status: 502 });
-}
-
-        return NextResponse.json({ ok: true });
+      const submittedAt = body?.meta?.ts || new Date().toISOString();
+      await excelAddRow([
+        body?.name ?? "",
+        email,
+        body?.message ?? "",
+        hasWebsite ? "Yes" : "No",
+        body?.website ?? "",
+        submittedAt,
+        body?.meta?.source ?? "",
+        body?.meta?.timeSpentMs ?? "",
+        body?.meta?.userAgent ?? "",
+        body?.meta?.page ?? "",
+        ip ?? "",
+      ]);
     } catch (e: unknown) {
-   const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-   console.error("[contact] fatal:", msg);
-    return NextResponse.json({ error: "Bad request" }, { status: 400 });
-}
-      
+      const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+      console.error("[contact] Excel append failed:", msg);
+      return NextResponse.json({ error: "Excel failed", detail: msg }, { status: 502 });
     }
+
+    /* --------------------------------- Emails ---------------------------------- */
+    const toOwner = process.env.MAIL_TO_OWNER || process.env.MS365_SMTP_USER;
+    if (!toOwner) {
+      return NextResponse.json(
+        { error: "Email failed", detail: "MAIL_TO_OWNER or MS365_SMTP_USER is not set" },
+        { status: 502 }
+      );
+    }
+
+    try {
+      await sendEmails({
+        toOwner,
+        toSender: email,
+        ownerSubject: `New contact — ${body?.name ?? ""} (${email})`,
+        ownerHtml: ownerEmailHtml({ ...body, ip, hasWebsite }),
+        senderSubject: "🔥 Your Business Deserves the Future — Let’s Build It Together",
+        senderHtml: senderEmailHtml(body),
+      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+      console.error("[contact] email error:", msg);
+      return NextResponse.json({ error: "Email failed", detail: msg }, { status: 502 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (e: unknown) {
+    if (isGraphError(e)) {
+      const msg = e.error?.message ?? "Graph error";
+      console.error("[contact] fatal (graph):", msg);
+      return NextResponse.json({ error: msg }, { status: 502 });
+    }
+
+    const msg =
+      e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+    console.error("[contact] fatal:", msg);
+    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+  }
+
+
+}
 

@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import JsonLd from "../components/JsonLd";
 import Contact from "../components/Contact";
 import reach from "@/app/styles/pages/contact.module.css";
 
@@ -18,12 +19,27 @@ type ContactPayload = {
     _timeSpentMs?: number;
 };
 
+type ContactFormData = {
+    name?: string;
+    email?: string;
+    message?: string;
+    hasWebsite?: "yes" | "no";     // how the form sends it
+    website?: string;
+    phone?: string;
+    honey?: string;
+    _timeSpentMs?: number;
+};
+
+const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact Gator Engineered Technologies",
+  } as const;                            
+
 export default function ContactPage() {
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // ✅ Your n8n webhook
-    const webhookUrl = process.env.NEXT_PUBLIC_CONTACT_WEBHOOK || "";
 
 
     return (
@@ -41,37 +57,41 @@ export default function ContactPage() {
                 {!submitted ? (
                     // wherever you render <Contact ... />
                     <Contact
-                        onSubmit={async (data) => {
+                        onSubmit={async (data: ContactFormData) => {
                             try {
                                 setError(null);
 
-                                // Build payload (unchanged)
-                                const payload = {
+                                // Base (typed) payload you can also send to n8n later if desired
+                                const base: ContactPayload = {
                                     name: data.name ?? "",
                                     email: data.email ?? "",
                                     message: data.message ?? "",
-                                    hasWebsite: data.hasWebsite === "yes",
+                                    hasWebsite: data.hasWebsite ?? false, // form may send "yes"/"no" or boolean
                                     website: data.website ?? "",
-                                    honey: (data as any).honey ?? "",
+                                    phone: data.phone ?? "",
+                                    honey: data.honey ?? "",
+                                    _timeSpentMs: typeof data._timeSpentMs === "number" ? data._timeSpentMs : undefined,
+                                    company: undefined,
+                                };
+
+                                // Final payload your API expects (keeps your existing meta format)
+                                const payload = {
+                                    ...base,
+                                    hasWebsite: base.hasWebsite === "yes" ? true : base.hasWebsite === "no" ? false : Boolean(base.hasWebsite),
                                     meta: {
                                         page: "/contact",
                                         ts: new Date().toISOString(),
-                                        userAgent:
-                                            typeof window !== "undefined" ? navigator.userAgent : "",
-                                        timeSpentMs:
-                                            typeof (data as any)._timeSpentMs === "number"
-                                                ? (data as any)._timeSpentMs
-                                                : undefined,
+                                        userAgent: typeof window !== "undefined" ? navigator.userAgent : "",
+                                        timeSpentMs: base._timeSpentMs,
                                     },
                                 };
 
-                                // ✅ always post to your Next API
-                                const ENDPOINT = "/api/contact"; 
+                                const ENDPOINT = "/api/contact";
 
                                 const res = await fetch(ENDPOINT, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify(payload), // your existing payload
+                                    body: JSON.stringify(payload),
                                 });
 
                                 if (!res.ok) {
@@ -80,11 +100,17 @@ export default function ContactPage() {
                                 }
 
                                 setSubmitted(true);
-                            } catch (err: any) {
-                                console.error("Contact submit error:", err);
+                            } catch (err: unknown) {
+                                // No 'any' here; narrow safely
+                                if (err instanceof Error) {
+                                    console.error("Contact submit error:", err.message);
+                                } else {
+                                    console.error("Contact submit error:", err);
+                                }
                                 setError("Sorry, something went wrong. Please try again in a moment.");
                             }
                         }}
+
                     />
 
 
@@ -101,6 +127,7 @@ export default function ContactPage() {
 
                 {error && <p className={reach.errorText}>{error}</p>}
             </section>
+            <JsonLd data={contactSchema} />
         </main>
     );
 }

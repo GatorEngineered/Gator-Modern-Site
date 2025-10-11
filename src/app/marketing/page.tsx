@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+
 import Link from "next/link";
+import JsonLd from "../components/JsonLd";
+import type { Metadata } from "next";
 import { ROUTES } from "@/app/routes";
 import Reveal from "@/app/components/Reveal";
 import styles from "@/app/styles/pages/marketing.module.css";
@@ -9,12 +11,33 @@ type CSSVars = React.CSSProperties & {
 };
 
 export const metadata: Metadata = {
-  title: "Marketing | Gator Engineered",
+  title: "Marketing: SEO & AEO for Florida Businesses",
   description:
-    "Email marketing, newsletters, SEO, and AEO (Answer Engine Optimization) built for small businesses.",
+    "Grow traffic with technical SEO and Answer-Engine Optimization that surfaces your brand in AI answers.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://gatorengineered.com/marketing" },
 };
 
 export default function MarketingPage() {
+ const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "SEO & AEO",
+    serviceType: "Marketing / SEO",
+    provider: { "@type": "LocalBusiness", name: "Gator Engineered Technologies" },
+    areaServed: [{ "@type": "State", name: "Florida" }],
+    offers: { "@type": "Offer", priceCurrency: "USD", price: "999" },
+  } as const;
+
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Marketing", item: "https://gatorengineered.com/marketing" },
+    ],
+  } as const;
+
+
   return (
     <main className={styles.wrap}>
       <div className={styles.backHomeWrap}>
@@ -332,6 +355,8 @@ export default function MarketingPage() {
           </div>
         </Reveal>
       </section>
+      <JsonLd data={serviceSchema} />
+      <JsonLd data={breadcrumbs} />
     </main>
   );
 }
