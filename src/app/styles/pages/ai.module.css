@@ -3,8 +3,8 @@
     --ink: #e5e7eb;
     --muted: #9aa3b2;
     --line: rgba(255, 255, 255, .08);
-    --blue5: #3b82f6;
-    --blue6: #2563eb;
+    --blue5: #0EA5E9;
+    --blue6: #60a5fa;
     min-height: 100%;
     display: grid;
     gap: clamp(20px, 3.5vw, 48px);
@@ -53,7 +53,7 @@
 }
 
 .fxAccent {
-    background: linear-gradient(90deg, #8b5cf6 0%, var(--blue5) 55%, var(--blue6) 100%);
+    background: linear-gradient(90deg, #38BDF8 0%, var(--blue5) 55%, var(--blue6) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

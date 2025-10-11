@@ -54,13 +54,11 @@ max-height: none;
   font-size: clamp(38px, 6.8vw, 88px);
   line-height: 1.08;
   font-weight: 850;
-  background: linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%);
+  background: linear-gradient(90deg, #60a5fa 0%, #38BDF8 100%);
   -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow:
-      0 1px 0 rgba(0,0,0,.35),
-      0 0 18px rgba(96,165,250,.35);
+
 }
 
 #site-title h1 {
@@ -76,11 +74,10 @@ max-height: none;
 }
 
 #site-tagline{
-  background: linear-gradient(90deg, #5eead4 0%, #60a5fa 55%, #93c5fd 100%);
+  background: linear-gradient(90deg, #60a5fa 0%, #60a5fa 55%, #38BDF8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
- 
     position: static;            /* was absolute */
   display: block;
   text-align: center;
