@@ -26,6 +26,13 @@ type ContactBody = {
   };
 };
 
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  try { return JSON.stringify(e); } catch { return String(e); }
+}
+
+
+
 /* =========================
    Helpers
 ========================= */
@@ -310,14 +317,6 @@ const featuresGrid = `
 `;
 
 
-  const infoList = `
-  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px 0 0;color:${palette.textSub};font-size:13px;">
-    <tr><td style="padding:2px 0;"><strong style="color:${palette.text};">Email:</strong> ${escapeHtml(email)}</td></tr>
-    <tr><td style="padding:2px 0;"><strong style="color:${palette.text};">Has website:</strong> ${hasWebsiteBool ? "Yes" : "No"}</td></tr>
-    ${hasWebsiteBool && website ? `<tr><td style="padding:2px 0;"><strong style="color:${palette.text};">Website:</strong> ${escapeHtml(website)}</td></tr>` : ""}
-    ${ip ? `<tr><td style="padding:2px 0;"><strong style="color:${palette.text};">IP:</strong> ${escapeHtml(ip)}</td></tr>` : ""}
-  </table>
-  `;
 
   const cta = primaryButton("Book a 15-min call", process.env.BOOKING_LINK ?? "#");
 
@@ -467,9 +466,10 @@ export async function POST(req: NextRequest) {
         ip ?? "",
       ]);
       excelOk = true;
-    } catch (e: any) {
-      excelError = e?.message || String(e);
-      console.error("[contact] Excel append failed:", excelError);
+    } catch (e: unknown) {
+      const msg = errMsg(e);
+  console.error("[contact] Excel append failed:", msg);
+  excelError = msg;
     }
 
     /* ---- Emails ---- */
@@ -499,9 +499,10 @@ export async function POST(req: NextRequest) {
       });
 
       emailOk = true;
-    } catch (e: any) {
-      emailError = e?.message || String(e);
-      console.error("[contact] email error:", emailError);
+    } catch (e: unknown) {
+      const msg = errMsg(e);
+  console.error("[contact] email error:", msg);
+  emailError = msg;
     }
 
     if (excelOk || emailOk) {
@@ -511,7 +512,7 @@ export async function POST(req: NextRequest) {
       { error: "Logging and email both failed", excelError, emailError },
       { status: 502 }
     );
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || String(e) }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: errMsg(e) }, { status: 500 });
   }
 }

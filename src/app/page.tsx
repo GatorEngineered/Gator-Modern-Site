@@ -40,6 +40,13 @@ type ModalKey =
   | "ai"
   | "marketing";
 
+  type ContactApiResult = {
+  ok?: boolean;
+  emailOk?: boolean;
+  excelOk?: boolean;
+  [k: string]: unknown;
+};
+
 /* ---------------- Lazy components ---------------- */
 
 const GlassModal = dynamic(() => import("./components/GlassModal"), {
@@ -536,7 +543,10 @@ const resetContactModal = () => {
                 throw new Error(`API ${res.status}: ${txt}`);
               }
 
-              const json: any = await res.json().catch(() => ({}));
+              const json: ContactApiResult = await res.json().catch(
+  () => ({} as ContactApiResult)
+);
+
 
               // show a user-facing “Received!” note immediately
               if (json?.ok) {

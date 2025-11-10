@@ -147,16 +147,28 @@ export default function Contact({ onSubmit, status }: ContactProps) {
       // tiny pause so “Sending…” is visible even on fast connections
       await new Promise((r) => setTimeout(r, 300));
 
-      const base: any = {
-        name: payload.name,
-        email: payload.email,
-        message: payload.message,
-        hasWebsite: payload.hasWebsite,
-        website: payload.website ?? "",
-        honey: payload.honey ?? "",
-        _timeSpentMs: payload._timeSpentMs,
-        company: undefined,
-      };
+      type BaseShape = {
+  name: string;
+  email: string;
+  message: string;
+  hasWebsite: "yes" | "no";
+  website: string;
+  honey: string;
+  _timeSpentMs?: number;
+  company?: string;
+};
+
+const base: BaseShape = {
+  name: payload.name,
+  email: payload.email,
+  message: payload.message,
+  hasWebsite: payload.hasWebsite,
+  website: payload.website ?? "",
+  honey: payload.honey ?? "",
+  _timeSpentMs: payload._timeSpentMs,
+  company: undefined,
+};
+
 
       const body = {
         ...base,
@@ -183,7 +195,9 @@ export default function Contact({ onSubmit, status }: ContactProps) {
         throw new Error(`API ${res.status}: ${text}`);
       }
 
-      const json: any = await res.json().catch(() => ({}));
+      type ApiResult = { ok?: boolean; emailOk?: boolean; excelOk?: boolean };
+const json: ApiResult = await res.json().catch(() => ({} as ApiResult));
+
 
       if (json?.ok) {
         if (json.emailOk === false && json.excelOk === true) {

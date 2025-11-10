@@ -105,7 +105,9 @@ export default function ContactPage() {
         throw new Error(`API ${res.status}: ${text}`);
       }
 
-      const dataJson: any = await res.json().catch(() => ({}));
+      type ApiResult = { ok?: boolean; emailOk?: boolean; excelOk?: boolean };
+const dataJson: ApiResult = await res.json().catch(() => ({} as ApiResult));
+
       if (dataJson?.ok) {
         if (dataJson.emailOk === false && dataJson.excelOk === true) {
           setNote("Received! (Email had an issue, but your info was saved.)");
