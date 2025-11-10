@@ -116,8 +116,14 @@
 }
 
 .submit:disabled {
-  opacity: 0.7;
+  opacity: 0.8;
   cursor: default;
+animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.4; }
 }
 
 
@@ -134,4 +140,5 @@
 /* Small screens */
 @media (max-width: 520px) {
   .card { padding: 16px; }
+  .form {width: 88%;}
 }

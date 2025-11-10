@@ -80,6 +80,29 @@ function Typewriter({
 export default function Home() {
   // ✅ your modal key + state
   const [modal, setModal] = useState<ModalKey>(null);
+
+    // Lock background when modal is open
+  useEffect(() => {
+    if (modal === "contact") {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+  }, [modal]);
+
+  // status + UI for the contact modal
+const [modalSubmitted,   setModalSubmitted]   = useState(false);
+const [modalStatus,      setModalStatus]      = useState<"idle" | "sending" | "success" | "error">("idle");
+const [modalNote,        setModalNote]        = useState<string | null>(null);
+const [modalError,       setModalError]       = useState<string | null>(null);
+
+const resetContactModal = () => {
+  setModalSubmitted(false);
+  setModalStatus("idle");
+  setModalNote(null);
+  setModalError(null);
+};
+
   const router = useRouter();
 
   // ✅ meta map
@@ -97,6 +120,9 @@ export default function Home() {
   const currentMeta =
     modal ? meta[modal as Exclude<ModalKey, null>] : undefined;
 
+
+
+
   // ✅ prefetch
   useEffect(() => {
     const id = setTimeout(() => {
@@ -109,9 +135,13 @@ export default function Home() {
 
   // ✅ open/close handlers
   const open = (k: ModalKey) => () => {
-    if (k === "contact") window.__contactFormOpenedAt = Date.now(); // spam guard timing
-    setModal(k);
-  };
+  if (k === "contact") {
+    window.__contactFormOpenedAt = Date.now(); // spam-guard timing
+    resetContactModal();                       // ✅ reset UI state each open
+  }
+  setModal(k);
+};
+
   const close = () => setModal(null);
 
 
@@ -445,61 +475,126 @@ export default function Home() {
           <p>Online Marketing (Emails, Newsletters, SEO, AEO, etc.) overview…</p>
         )}
 
+
+
         {modal === "contact" && (
-          <Contact
-            onSubmit={async (data: ModalContactPayload) => {
-              // --- light spam guards ---
-              if (data?.company || data?.honey) return; // honeypot
-              const openedAt = window.__contactFormOpenedAt ?? Date.now();
-              const timeSpentMs = Date.now() - openedAt;
-              if (timeSpentMs < 3000) return; // too fast, likely bot
+  <>
+    {!modalSubmitted ? (
+      <>
+        <Contact
+          status={modalStatus} // ✅ drives button text/disabled state
+          onSubmit={async (data: ModalContactPayload) => {
+            // --- light spam guards ---
+            if (data?.company || data?.honey) return;
+            const openedAt = window.__contactFormOpenedAt ?? Date.now();
+            const timeSpentMs = Date.now() - openedAt;
+            if (timeSpentMs < 3000) return;
 
-              // --- validation ---
-              const email = (data?.email ?? "").trim();
-              const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-              if (!emailOk) return;
+            // --- validation ---
+            const email = (data?.email ?? "").trim();
+            const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            if (!emailOk) return;
 
-              const hasWebsite =
-                typeof data?.hasWebsite === "boolean"
-                  ? data.hasWebsite
-                  : String(data?.hasWebsite ?? "").toLowerCase() === "yes";
+            const hasWebsite =
+              typeof data?.hasWebsite === "boolean"
+                ? data.hasWebsite
+                : String(data?.hasWebsite ?? "").toLowerCase() === "yes";
 
-              const payload = {
-                name: data?.name ?? "",
-                email,
-                message: data?.message ?? "",
-                hasWebsite,
-                website: data?.website ?? "",
-                phone: data?.phone ?? "",
-                honey: (data?.honey ?? data?.company ?? "") as string,
-                meta: {
-                  source: "home-modal",
-                  ts: new Date().toISOString(),
-                  timeSpentMs,
-                  userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
-                  page: typeof location !== "undefined" ? location.pathname : "/",
-                },
-              };
+            const payload = {
+              name: data?.name ?? "",
+              email,
+              message: data?.message ?? "",
+              hasWebsite,
+              website: data?.website ?? "",
+              phone: data?.phone ?? "",
+              honey: (data?.honey ?? data?.company ?? "") as string,
+              meta: {
+                source: "home-modal",
+                ts: new Date().toISOString(),
+                timeSpentMs,
+                userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+                page: typeof location !== "undefined" ? location.pathname : "/",
+              },
+            };
 
-              try {
-                const res = await fetch("/api/contact", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(payload),
-                });
+            try {
+              setModalError(null);
+              setModalNote(null);
+              setModalStatus("sending");                       // 👉 show “Sending…”
 
-                if (!res.ok) {
-                  const txt = await res.text().catch(() => "");
-                  console.error("Modal contact error:", res.status, txt);
-                }
+              // force a paint so the button updates before fetch starts
+              await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
-                setModal(null); // close on success
-              } catch (e) {
-                console.error("Modal contact network error:", e);
+              const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              if (!res.ok) {
+                const txt = await res.text().catch(() => "");
+                throw new Error(`API ${res.status}: ${txt}`);
               }
-            }}
-          />
+
+              const json: any = await res.json().catch(() => ({}));
+
+              // show a user-facing “Received!” note immediately
+              if (json?.ok) {
+                if (json.emailOk === false && json.excelOk === true) {
+                  setModalNote("Received! (Email had an issue, but your info was saved.)");
+                } else if (json.excelOk === false && json.emailOk === true) {
+                  setModalNote("Received! (Excel logging had an issue; I’ll fix it.)");
+                } else {
+                  setModalNote("Received!");
+                }
+              } else {
+                setModalNote("Received!");
+              }
+
+              setModalStatus("success");                       // 👉 “Sent ✓”
+              setTimeout(() => setModalSubmitted(true), 1200); // 👉 then thank-you
+            } catch (e) {
+              console.error("Modal contact error:", e);
+              setModalStatus("error");
+              setModalError("Sorry, something went wrong. Please try again in a moment.");
+            }
+          }}
+        />
+
+        {/* Inline status under the form so users SEE state before swap */}
+        <div style={{ marginTop: 10, minHeight: 22 }}>
+          {modalStatus === "sending" && (
+            <p className="infoText">Sending… please wait.</p>
+          )}
+          {modalStatus === "success" && (
+            <p className="infoText">{modalNote ?? "Received!"}</p>
+          )}
+        </div>
+
+        {modalNote && modalStatus !== "success" && (
+          <p className="infoText">{modalNote}</p>
         )}
+        {modalError && <p className="errorText">{modalError}</p>}
+      </>
+    ) : (
+      // ✅ Thank-you view inside the modal (don’t close immediately)
+      <div role="status" aria-live="polite" style={{ textAlign: "center", padding: 16 }}>
+        <h3>Thanks — got it! ✅</h3>
+        <p>I’ll follow up shortly. You can close this window now.</p>
+        <button
+          className="btn btn--primary"
+          onClick={() => {
+            close();            // close the modal
+            resetContactModal(); // reset state for next open
+          }}
+        >
+          Close
+        </button>
+      </div>
+    )}
+  </>
+)}
+
       </GlassModal>
     </main>
   );
