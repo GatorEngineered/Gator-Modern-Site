@@ -287,14 +287,14 @@ function userEmailHtml(u: UserFacing): string {
 
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-    style="background:${palette.bg};padding:22px 0;">
+    style="background:#ffffff;padding:22px 0;">
     <tr>
       <td align="center">
         <table role="presentation" width="640" cellpadding="0" cellspacing="0"
           style="background:${palette.card};border-radius:14px;overflow:hidden;">
           <tr>
             <td style="background:${palette.headerBg};padding:16px 18px;border-bottom:1px solid ${palette.border}">
-              <div style="font-weight:900;font-size:22px;color:#9dc5ff;">
+              <div style="font-weight:900;font-size:25px;color:#9dc5ff;">
                 Gator Engineered Technologies
               </div>
               <div style="color:${palette.text};opacity:.85;font-size:12px;margin-top:4px;">
