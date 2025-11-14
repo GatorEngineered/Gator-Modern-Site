@@ -1,461 +1,385 @@
-// app/api/contact/route.ts
+// src/app/api/contact/route.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import type { Transporter } from "nodemailer";
-import nodemailer from "nodemailer";
+import nodemailer, { Transporter } from "nodemailer";
 
-type YesNo = "yes" | "no";
+/**
+ * === Required environment variables ===
+ * MAIL_TO_OWNER=you@yourdomain.com
+ * MAIL_FROM_NAME=Gator Engineered
+ * MS365_SMTP_USER=...
+ * MS365_SMP_PASS=...
+ * MS365_SMTP_HOST=smtp.office365.com
+ * MS365_SMTP_PORT=587
+ * BOOKING_LINK=https://book.ms/...
+ *
+ * WEB_URL_CRYPTO=https://yourdomain.com/crypto
+ * WEB_URL_WEBSITES=https://yourdomain.com/web
+ * WEB_URL_AI=https://yourdomain.com/automation
+ * WEB_URL_SEO=https://yourdomain.com/seo-aeo
+ */
+
+//
+// ---------- Types ----------
+//
+interface ContactMeta {
+  page?: string;
+  ts?: string; // ISO
+  userAgent?: string;
+  timeSpentMs?: number;
+}
 
 interface ContactBody {
   name: string;
-  message: string;
-  email?: string;
-  phone?: string;
-  hasWebsite?: YesNo | boolean; // you coerce later, so allow boolean or "yes"/"no"
-  website?: string;
-  honey?: string;               // <-- you read body.honey
-  meta?: {                      // <-- you read body.meta?.*
-    source?: string;
-    ts?: string;
-    timeSpentMs?: number;
-    userAgent?: string;
-    page?: string;
-  };
-  ip?: string;                  // (not required but harmless if you ever pass it around)
-}
-
-
-interface GraphErrorShape {
-  error: {
-    code?: string;
-    message?: string;
-    innerError?: unknown;
-  };
-}
-
-function isGraphError(x: unknown): x is GraphErrorShape {
-  if (typeof x !== "object" || x === null) return false;
-  const rec = x as Record<string, unknown>;
-  const e = rec.error as unknown;
-  return typeof e === "object" && e !== null;
-}
-
-
-export const runtime = "nodejs";
-
-/* ------------------------- Types & tiny utils ------------------------- */
-type InPayload = {
-  name?: string;
-  email?: string;
+  email: string;
   message?: string;
-  hasWebsite?: boolean | string;
+  hasWebsite?: boolean | "yes" | "no";
   website?: string;
+  phone?: string;
   honey?: string;
-  meta?: {
-    source?: string;
-    ts?: string;
+  company?: string;
+  meta?: ContactMeta;
+}
+
+interface UserFacing {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface OwnerEmailData {
+  name: string;
+  email: string;
+  hasWebsite: boolean;
+  website?: string;
+  message?: string;
+  meta: {
+    page: string;
+    ts: string;
+    userAgent: string;
+    ip: string;
     timeSpentMs?: number;
-    userAgent?: string;
-    page?: string;
   };
+}
+
+//
+// ---------- Small helpers ----------
+//
+const WEB_URLS = {
+  crypto: process.env.WEB_URL_CRYPTO ?? "https://gatorengineered.com/crypto",
+  web: process.env.WEB_URL_WEBSITES ?? "https://gatorengineered.com/web",
+  ai: process.env.WEB_URL_AI ?? "https://gatorengineered.com/ai",
+  seo: process.env.WEB_URL_SEO ?? "https://gatorengineered.com/marketing",
 };
 
-const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function clientIp(req: NextRequest) {
-  const fwd = req.headers.get("x-forwarded-for") ?? "";
-  const rip = req.headers.get("x-real-ip") ?? "";
-  return fwd.split(",")[0]?.trim() || rip || null;
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
-/* ----------------------------- Email (SMTP) --------------------------- */
-async function sendEmails({
-  toOwner,
-  toSender,
-  ownerSubject,
-  ownerHtml,
-  senderSubject,
-  senderHtml,
-}: {
-  toOwner: string;
-  toSender: string;
-  ownerSubject: string;
-  ownerHtml: string;
-  senderSubject: string;
-  senderHtml: string;
-}) {
-  const host = process.env.MS365_SMTP_HOST || "smtp.office365.com";
-  const port = Number(process.env.MS365_SMTP_PORT || "587");
-  const user = process.env.MS365_SMTP_USER;
-  const pass = process.env.MS365_SMTP_PASS;
+function readIp(req: NextRequest): string {
+  const f = req.headers.get("x-forwarded-for");
+  if (f) return f.split(",")[0].trim();
+  const r = req.headers.get("x-real-ip");
+  if (r) return r;
+  return "";
+}
 
-  if (!user || !pass) {
-    throw new Error("SMTP not configured: MS365_SMTP_USER or MS365_SMTP_PASS is missing.");
+function boolFromYN(v: boolean | "yes" | "no" | undefined): boolean {
+  if (v === true || v === "yes") return true;
+  if (v === false || v === "no") return false;
+  return false;
+}
+
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  try {
+    return JSON.stringify(e);
+  } catch {
+    return String(e);
   }
+}
 
-  const transporter: Transporter = nodemailer.createTransport({
+function makeTransport(): Transporter {
+  const user = process.env.MS365_SMTP_USER ?? "";
+  const pass = process.env.MS365_SMP_PASS ?? process.env.MS365_SMTP_PASS ?? "";
+  const host = process.env.MS365_SMTP_HOST ?? "smtp.office365.com";
+  const port = Number(process.env.MS365_SMTP_PORT ?? 587);
+
+  return nodemailer.createTransport({
     host,
     port,
-    secure: false,
+    secure: port === 465,
     auth: { user, pass },
   });
-
-  try {
-    await transporter.verify(); // tells us immediately if auth/TLS is wrong
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-    throw new Error(`SMTP verify failed: ${msg}`);
-  }
-
-  try {
-    await transporter.sendMail({
-      from: `"${process.env.MAIL_FROM_NAME || "Gator Engineered"}" <${user}>`,
-      to: toOwner,
-      subject: ownerSubject,
-      html: ownerHtml,
-    });
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-    throw new Error(`Owner email failed: ${msg}`);
-  }
-
-  try {
-    await transporter.sendMail({
-      from: `"${process.env.MAIL_FROM_NAME || "Gator Engineered Technologies"}" <${user}>`,
-      to: toSender,
-      subject: senderSubject,
-      html: senderHtml,
-    });
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-    throw new Error(`Sender email failed: ${msg}`);
-  }
 }
 
-/* ------------------------ Excel (Graph, app-only) --------------------- */
-async function graphToken() {
-  const tenant = process.env.MS365_TENANT_ID;
-  const clientId = process.env.MS365_CLIENT_ID;
-  const clientSecret = process.env.MS365_CLIENT_SECRET;
-  if (!tenant || !clientId || !clientSecret) {
-    throw new Error("Graph not configured (MS365_TENANT_ID / MS365_CLIENT_ID / MS365_CLIENT_SECRET).");
-  }
-  const params = new URLSearchParams();
-  params.set("client_id", clientId);
-  params.set("client_secret", clientSecret);
-  params.set("grant_type", "client_credentials");
-  params.set("scope", "https://graph.microsoft.com/.default");
-
-  const r = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString(),
-  });
-  if (!r.ok) throw new Error(`Graph token failed: ${r.status} ${await r.text()}`);
-  const j = (await r.json()) as { access_token: string };
-  return j.access_token;
-}
-
-async function excelAddRow(values: (string | number | boolean | null)[]) {
-  const upn = process.env.MS365_USER_UPN;         // OneDrive owner (e.g. reva@...onmicrosoft.com)
-  const filePath = process.env.EXCEL_FILE_PATH;   // e.g. "/ContactSubmissions.xlsx"
-  const table = process.env.EXCEL_TABLE_NAME || "Submissions";
-  if (!upn || !filePath) throw new Error("Excel target not configured (MS365_USER_UPN / EXCEL_FILE_PATH).");
-
-  const token = await graphToken();
-  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
-    upn
-  )}/drive/root:${encodeURI(filePath)}:/workbook/tables('${encodeURIComponent(table)}')/rows/add`;
-
-  const r = await fetch(url, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ values: [values] }),
-  });
-  if (!r.ok) throw new Error(`Excel add row failed: ${r.status} ${await r.text()}`);
-}
-
-/* -------------------------- Email templates --------------------------- */
-function ownerEmailHtml(p: InPayload & { ip: string | null; hasWebsite: boolean }) {
-  return `
-  <h2>New contact submission</h2>
-  <p><strong>Name:</strong> ${p.name ?? ""}</p>
-  <p><strong>Email:</strong> ${p.email ?? ""}</p>
-  <p><strong>Has Website:</strong> ${p.hasWebsite ? "Yes" : "No"}</p>
-  <p><strong>Website:</strong> ${p.website ?? ""}</p>
-  <p><strong>Message:</strong><br/>${(p.message ?? "").replace(/\n/g, "<br/>")}</p>
-  <hr/>
-  <p><strong>Source:</strong> ${p.meta?.source ?? ""} &nbsp; <strong>Page:</strong> ${p.meta?.page ?? ""}</p>
-  <p><strong>SubmittedAt:</strong> ${p.meta?.ts ?? ""} &nbsp; <strong>TimeSpentMs:</strong> ${p.meta?.timeSpentMs ?? ""}</p>
-  <p><strong>UserAgent:</strong> ${p.meta?.userAgent ?? ""}</p>
-  <p><strong>IP:</strong> ${p.ip ?? ""}</p>
-  `;
-}
-
-function senderEmailHtml(p: InPayload) {
-  const name = p.name || "there";
-  const msg = (p.message ?? "").replace(/\n/g, "<br/>");
-
-  // palette (tuned to your site)
-  const C = {
-    card: "#0b1430",
-    card2: "#0e1a3f",
-    text: "#e8f0ff",
-    mute: "#a9b7d3",
-    border: "#23325b",
-
-    // buttons: dark navy with light text
-    btn: "#102a6b",
-    btnText: "#e6f0ff",
-    btnBorder: "#081c49",
-
-    // gradient text (and fallback color for non-supporting clients)
-    gradStart: "#26d0ff",
-    gradEnd: "#6c7cff",
-    gradFallback: "#5fbaff",
-  };
-
-  const LINKS = {
-    crypto: "https://gatorengineered.com/services/crypto",
-    web: "https://gatorengineered.com/services/web",
-    ai: "https://gatorengineered.com/services/ai",
-    seo: "https://gatorengineered.com/services/marketing",
-    cta: "https://gatorengineered.com/contact",
-  };
-
-  // mobile-safe full-width dark-blue button
-  const btn = (href: string, label: string) => `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
-      <tr>
-        <td>
-          <a href="${href}" style="
-              display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;
-              font:800 14px/20px Inter,Arial;color:${C.btnText};
-              background:${C.btn};
-              border:2px solid ${C.btnBorder};
-              border-radius:12px;padding:14px 16px;">
-            ${label}
-          </a>
-        </td>
-      </tr>
-    </table>`;
-
-  // service card
-  const card = (title: string, body: string, href: string, label: string) => `
-    <td style="vertical-align:top;background:${C.card};
-            border:1px solid ${C.border};border-radius:12px;padding:16px;">
-      <div style="font:800 14px/20px Inter,Arial;color:${C.gradFallback};margin-bottom:6px;">${title}</div>
-      <div style="font:14px/22px Inter,Arial;color:${C.mute};">${body}</div>
-      ${btn(href, label)}
-    </td>`;
-
-  // gradient text helper with Outlook/Gmail fallback
-  const _grad = (text: string) => `
-    <!--[if mso]><span style="color:${C.gradFallback};font-weight:800;">${text}</span><![endif]-->
-    <!--[if !mso]><!-- -->
-      <span style="
-        background:linear-gradient(90deg, ${C.gradStart}, ${C.gradEnd});
-        -webkit-background-clip:text;
-        -webkit-text-fill-color:transparent;
-        color:${C.gradFallback};
-        font-weight:800;">
-        ${text}
-      </span>
-    <!--<![endif]-->`;
+//
+// ---------- Owner summary email (matches your screenshot) ----------
+//
+function ownerEmailHtml(d: OwnerEmailData): string {
+  const yesNo = d.hasWebsite ? "Yes" : "No";
 
   return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:0;margin:0;">
-    <tr>
-      <td align="center" style="padding:24px 14px;">
-        <table role="presentation" width="100%" style="max-width:640px;background:${C.card};
-               border-radius:18px;overflow:hidden;border:1px solid ${C.border};">
+<div style="font:15px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0b1220;">
+  <h1 style="font-size:26px;margin:0 0 18px;">New contact submission</h1>
 
-          <!-- Header (solid; matches card) -->
-<tr>
-  <td style="padding:24px 24px 16px;background:${C.card2};">
-    <div style="font:900 22px/28px Inter,Arial;color:${C.text};letter-spacing:.2px;">
-      ${_grad("Gator Engineered Technologies")}
-    </div>
-    <div style="font:600 13px/20px Inter,Arial;color:${C.mute};margin-top:6px;">
-      The next evolution of websites — real-time, AI-powered, blockchain-ready.
-    </div>
-  </td>
-</tr>
+  <p style="margin:8px 0;"><strong>Name:</strong> ${escapeHtml(d.name)}</p>
+  <p style="margin:8px 0;"><strong>Email:</strong> ${escapeHtml(d.email)}</p>
+  <p style="margin:8px 0;"><strong>Has Website:</strong> ${yesNo}</p>
+  <p style="margin:8px 0;"><strong>Website:</strong> ${escapeHtml(d.website ?? "")}</p>
+  <p style="margin:8px 0;"><strong>Message:</strong><br/>${escapeHtml(d.message ?? "")}</p>
 
+  <hr style="border:none;border-top:1px solid #dde3ea;margin:18px 0;" />
 
-          <!-- Intro -->
+  <p style="margin:6px 0;">
+    <strong>Source:</strong> &nbsp; <strong>Page:</strong> ${escapeHtml(d.meta.page)}
+  </p>
+  <p style="margin:6px 0;">
+    <strong>SubmittedAt:</strong> ${escapeHtml(d.meta.ts)}
+    ${typeof d.meta.timeSpentMs === "number" ? `&nbsp;&nbsp;<strong>TimeSpentMs:</strong> ${d.meta.timeSpentMs}` : ""}
+  </p>
+  <p style="margin:6px 0;"><strong>UserAgent:</strong> ${escapeHtml(d.meta.userAgent)}</p>
+  <p style="margin:6px 0;"><strong>IP:</strong> ${escapeHtml(d.meta.ip)}</p>
+</div>`;
+}
+
+//
+// ---------- User autoresponder (keeps your design) ----------
+//
+const palette = {
+  bg: "#0b1c33",
+  card: "#0f2542",
+  border: "#1e3a5f",
+  blue: "#8bbcff",
+  text: "#c6d3e1",
+  btn: "#244b7a",
+  btnText: "#ffffff",
+  headerBg: "#0e2240",
+};
+
+function featureCard(title: string, body: string, cta: string, href: string): string {
+  return `
+<td width="50%" style="padding:10px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+    style="background:${palette.card};border:1px solid ${palette.border};border-radius:12px;">
+    <tr><td style="padding:16px;">
+      <p style="margin:0 0 8px;font-weight:800;color:${palette.blue};font-size:15px;">${title}</p>
+      <p style="margin:0 0 14px;color:${palette.text};font-size:14px;line-height:1.45;">${body}</p>
+      <table role="presentation" cellpadding="0" cellspacing="0">
         <tr>
-            <td style="padding:20px 24px 0;">
-        <p style="margin:0 0 8px;font:900 18px/26px Inter,Arial;color:${C.text};">Hi ${name},</p>
-        <p style="margin:0 0 14px;font:15px/24px Inter,Arial;color:#a9b7d3;">
-    Thanks for reaching out — you just unlocked a build process that treats your website like a
-    <strong style="color:#e8f0ff;">living product</strong>, not a static brochure.
-    We combine <strong style="color:#5fbaff;">Web2 + Web3</strong>,
-    <strong style="color:#5fbaff;">AI automation</strong>, and
-    <strong style="color:#5fbaff;">Answer-Engine SEO (AEO)</strong>
-    so your brand shows up in search <em>and</em> AI results — and keeps customers coming back.
-</p>
-
-            </td>
+          <td bgcolor="${palette.btn}" style="border-radius:10px;">
+            <a href="${href}" target="_blank"
+              style="display:inline-block;padding:12px 18px;font-weight:700;font-size:14px;color:${palette.btnText};text-decoration:none;border-radius:10px;">
+              ${cta}
+            </a>
+          </td>
         </tr>
+      </table>
+    </td></tr>
+  </table>
+</td>`;
+}
 
-          <!-- Their message -->
+function primaryButton(label: string, href: string): string {
+  return `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center" style="padding:8px 0;">
+      <a href="${href}" target="_blank"
+        style="display:inline-block;background:${palette.btn};color:${palette.btnText};
+               padding:14px 22px;border-radius:10px;font-weight:800;text-decoration:none;">
+        ${label}
+      </a>
+    </td>
+  </tr>
+</table>`;
+}
+
+function userEmailHtml(u: UserFacing): string {
+  const intro = `
+  <tr>
+    <td style="padding:18px 18px 0 18px;">
+      <p style="margin:0 0 12px;color:#ffffff;font-size:18px;font-weight:800;">
+        Hi ${escapeHtml(u.name)},
+      </p>
+      <p style="margin:0 0 12px;color:${palette.text};font-size:15px;line-height:1.6;">
+        Thanks for reaching out — you just unlocked a build process that treats your website like a
+        <strong style="color:#ffffff;">living product</strong>, not a static brochure. We combine
+        <strong style="color:#ffffff;">Web2 + Web3</strong>,
+        <strong style="color:#ffffff;"> AI automation</strong>, and
+        <strong style="color:#ffffff;"> Answer-Engine SEO (AEO)</strong>
+        so your brand shows up in search <em>and</em> AI results — and keeps customers coming back.
+      </p>
+    </td>
+  </tr>`;
+
+  const yourMsg = `
+  <tr>
+    <td style="padding:0 18px 10px 18px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+        style="background:${palette.card};border:1px dashed ${palette.border};border-radius:10px;">
+        <tr>
+          <td style="padding:12px 14px;color:${palette.text};font-size:14px;">
+            <div style="opacity:.8;margin-bottom:6px;">What you sent:</div>
+            <div style="white-space:pre-wrap;color:#ffffff;">${escapeHtml(u.message)}</div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>`;
+
+  const grid = `
+  <tr>
+    <td style="padding:8px 18px 12px 18px;color:${palette.text};font-size:14px;font-weight:700;">
+      What we can build for you
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:0 8px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          ${featureCard(
+            "Blockchain & Crypto",
+            "Loyalty points as tokens, branded coins, wallet login, and gated experiences.",
+            "Explore Crypto",
+            WEB_URLS.crypto
+          )}
+          ${featureCard(
+            "Websites (Web2 + Web3)",
+            "Creator-grade React/Next builds with optional wallet connect & on-chain perks.",
+            "See Web Builds",
+            WEB_URLS.web
+          )}
+        </tr>
+        <tr>
+          ${featureCard(
+            "AI Chatbots & Automation",
+            "Answer customers 24/7 and automate ops from lead → CRM → follow-up.",
+            "Automate With AI",
+            WEB_URLS.ai
+          )}
+          ${featureCard(
+            "SEO + AEO Growth",
+            "Technical SEO + Answer-Engine Optimization to win Google and AI answers.",
+            "Grow Traffic",
+            WEB_URLS.seo
+          )}
+        </tr>
+      </table>
+    </td>
+  </tr>`;
+
+  const booking = primaryButton("Book a 15-min call", process.env.BOOKING_LINK ?? "#");
+
+  const footer = `
+  <tr>
+    <td style="padding:10px 18px 18px 18px;color:${palette.text};font-size:12px;">
+      Prefer email? Reply to this message — I read everything personally.
+      <br/><br/>
+      <span style="opacity:.7;">— Reva, Software Engineer · Gator Engineered Technologies</span>
+    </td>
+  </tr>`;
+
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+    style="background:${palette.bg};padding:22px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="640" cellpadding="0" cellspacing="0"
+          style="background:${palette.card};border-radius:14px;overflow:hidden;">
           <tr>
-            <td style="padding:0 24px 8px;">
-              <div style="background:${C.card2};border:1px dashed ${C.border};border-radius:12px;
-                          padding:12px 14px;color:${C.text};font:14px/22px Inter,Arial;">
-                <div style="opacity:.65;margin:0 0 4px;">What you sent:</div>
-                <div>${msg}</div>
+            <td style="background:${palette.headerBg};padding:16px 18px;border-bottom:1px solid ${palette.border}">
+              <div style="font-weight:900;font-size:22px;color:#9dc5ff;">
+                Gator Engineered Technologies
+              </div>
+              <div style="color:${palette.text};opacity:.85;font-size:12px;margin-top:4px;">
+                The next evolution of websites — real-time, AI-powered, blockchain-ready.
               </div>
             </td>
           </tr>
-
-          <!-- Services -->
-          <tr><td style="padding:8px 24px 0;">
-            <p style="margin:0 0 8px;font:900 16px/24px Inter,Arial;color:${C.text};">What we can build for you</p>
-          </td></tr>
-
-          <tr>
-            <td style="padding:0 16px 8px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:8px;">
-                <tr>
-                ${card(
-    "Blockchain & Crypto",
-    "Loyalty points as tokens, branded coins, wallet login, and gated experiences.",
-    LINKS.crypto,
-    "Explore Crypto"
-  )}
-                ${card(
-    "Websites (Web2 + Web3)",
-    "Creator-grade React/Next builds with optional wallet connect & on-chain perks.",
-    LINKS.web,
-    "See Web Builds"
-  )}
-                </tr>
-                <tr>
-                ${card(
-    "AI Chatbots & Automation",
-    "Answer customers 24/7 and automate ops from lead → CRM → follow-up.",
-    LINKS.ai,
-    "Automate With AI"
-  )}
-                ${card(
-    "SEO + AEO Growth",
-    "Technical SEO + Answer-Engine Optimization to win Google and AI answers.",
-    LINKS.seo,
-    "Grow Traffic"
-  )}
-                </tr>
-            </table>
-            </td>
-          </tr>
-
-          <!-- CTA -->
-          <tr>
-            <td style="padding:10px 24px 20px;text-align:center;">
-            ${btn(LINKS.cta, "Book a 15-min call")}
-              <div style="margin-top:10px;font:13px/20px Inter,Arial;color:${C.mute};">
-                Prefer email? Reply to this message — I read everything personally.
-              </div>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="padding:14px 24px;border-top:1px solid ${C.border};">
-              <div style="font:12px/18px Inter,Arial;color:${C.mute};">
-                — Reva, Software Engineer · Gator Engineered Technologies
-              </div>
-            </td>
-          </tr>
-
+          ${intro}
+          ${yourMsg}
+          ${grid}
+          <tr><td style="padding:8px 18px 16px 18px;">${booking}</td></tr>
+          ${footer}
         </table>
       </td>
     </tr>
   </table>`;
 }
 
-
-
-/* ------------------------------- Handler ------------------------------ */
+//
+// ---------- POST handler ----------
+//
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as ContactBody;
+    const nowIso = new Date().toISOString();
+    const ua = req.headers.get("user-agent") ?? "";
+    const ip = readIp(req);
 
+    const parsed = (await req.json()) as ContactBody;
 
-    // Honeypot
-    if (body?.honey) return NextResponse.json({ ok: true });
-
-    const email = (body?.email ?? "").trim();
-    if (!EMAIL_RX.test(email)) return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-
-    const hasWebsite =
-      typeof body?.hasWebsite === "boolean"
-        ? body.hasWebsite
-        : String(body?.hasWebsite ?? "").toLowerCase() === "yes";
-
-    const ip = clientIp(req);
-
-    /* ---------- Excel logging (TEMP: bubble errors so we can fix fast) ---------- */
-    try {
-      const submittedAt = body?.meta?.ts || new Date().toISOString();
-      await excelAddRow([
-        body?.name ?? "",
-        email,
-        body?.message ?? "",
-        hasWebsite ? "Yes" : "No",
-        body?.website ?? "",
-        submittedAt,
-        body?.meta?.source ?? "",
-        body?.meta?.timeSpentMs ?? "",
-        body?.meta?.userAgent ?? "",
-        body?.meta?.page ?? "",
-        ip ?? "",
-      ]);
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-      console.error("[contact] Excel append failed:", msg);
-      return NextResponse.json({ error: "Excel failed", detail: msg }, { status: 502 });
+    // honeypot
+    if (parsed.honey && parsed.honey.trim().length > 0) {
+      return NextResponse.json({ ok: true, skipped: true });
     }
 
-    /* --------------------------------- Emails ---------------------------------- */
-    const toOwner = process.env.MAIL_TO_OWNER || process.env.MS365_SMTP_USER;
-    if (!toOwner) {
-      return NextResponse.json(
-        { error: "Email failed", detail: "MAIL_TO_OWNER or MS365_SMTP_USER is not set" },
-        { status: 502 }
-      );
-    }
+    // normalize booleans + message/name/email safe defaults
+    const hasWebsite = boolFromYN(parsed.hasWebsite);
+    const name = (parsed.name ?? "").trim() || "Friend";
+    const email = (parsed.email ?? "").trim();
+    const message = (parsed.message ?? "").trim();
 
-    try {
-      await sendEmails({
-        toOwner,
-        toSender: email,
-        ownerSubject: `New contact — ${body?.name ?? ""} (${email})`,
-        ownerHtml: ownerEmailHtml({ ...body, ip, hasWebsite }),
-        senderSubject: "🔥 Your Business Deserves the Future — Let’s Build It Together",
-        senderHtml: senderEmailHtml(body),
+    // Build meta
+    const meta: OwnerEmailData["meta"] = {
+      page: parsed.meta?.page ?? "",
+      ts: parsed.meta?.ts ?? nowIso,
+      userAgent: parsed.meta?.userAgent ?? ua,
+      ip,
+      timeSpentMs: parsed.meta?.timeSpentMs,
+    };
+
+    const transporter = makeTransport();
+
+    // --- Owner email (plain summary) ---
+    const ownerHtml = ownerEmailHtml({
+      name,
+      email,
+      hasWebsite,
+      website: parsed.website,
+      message,
+      meta,
+    });
+
+    await transporter.sendMail({
+      from: `"${process.env.MAIL_FROM_NAME ?? "Gator Engineered"}" <${process.env.MS365_SMTP_USER}>`,
+      to: process.env.MAIL_TO_OWNER ?? "",
+      subject: "New contact submission",
+      html: ownerHtml,
+    });
+
+    // --- User autoresponder (styled) ---
+    if (email) {
+      const userHtml = userEmailHtml({ name, email, message });
+      await transporter.sendMail({
+        from: `"${process.env.MAIL_FROM_NAME ?? "Gator Engineered"}" <${process.env.MS365_SMTP_USER}>`,
+        to: email,
+        subject: "Thanks for reaching out — let’s build it",
+        html: userHtml,
       });
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-      console.error("[contact] email error:", msg);
-      return NextResponse.json({ error: "Email failed", detail: msg }, { status: 502 });
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, emailOk: true });
   } catch (e: unknown) {
-    if (isGraphError(e)) {
-      const msg = e.error?.message ?? "Graph error";
-      console.error("[contact] fatal (graph):", msg);
-      return NextResponse.json({ error: msg }, { status: 502 });
-    }
-
-    const msg =
-      e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-    console.error("[contact] fatal:", msg);
-    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+    console.error("contact POST error:", e);
+    return NextResponse.json(
+      { ok: false, emailOk: false, error: errMsg(e) },
+      { status: 500 }
+    );
   }
-
-
 }
-

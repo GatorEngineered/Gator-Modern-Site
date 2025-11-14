@@ -10,6 +10,12 @@
     z-index: 50;
 }
 
+body.modal-open main {
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+
 .glassPanel {
     width: min(840px, 92vw);
     max-height: 80vh;
