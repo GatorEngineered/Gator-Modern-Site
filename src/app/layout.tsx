@@ -7,9 +7,11 @@ import SmoothScroll from "./components/SmoothScroll";
 import JsonLd from "./components/JsonLd";
 
 export const metadata = {
+  metadataBase: new URL("https://gatorengineered.com"),
   title: "Gator Engineered Technologies | Web Design & AI in Spring Hill, FL",
   description:
     "We build fast, modern websites with AI chatbots and crypto payments for businesses in Spring Hill, Brooksville, Dade City, Port Richey, New Port Richey, and across Hernando & Pasco County, FL. Powered by React/Next.js and ready for Web3.",
+  robots: { index: true, follow: true },
   keywords: [
     "web design Spring Hill FL",
     "web developer Hernando County",

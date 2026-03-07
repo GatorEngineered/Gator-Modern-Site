@@ -27,6 +27,7 @@ export const metadata = {
   alternates: {
     canonical: "/about",
   },
+  robots: { index: true, follow: true },
 };
 
 export default function AboutLayout({

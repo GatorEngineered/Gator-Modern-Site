@@ -4,6 +4,7 @@ export const metadata = {
     description:
         "We build practical AI for small businesses: on-brand chatbots, lead capture, appointment scheduling, and automated follow-ups. Fast setup, clear pricing, crypto-ready checkout.",
     alternates: { canonical: "/ai" },
+    robots: { index: true, follow: true },
     openGraph: {
         title: "AI Services for Small Businesses | Chatbots, Automation, Lead Capture",
         description:

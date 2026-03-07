@@ -4,6 +4,7 @@ export const metadata = {
     description:
         "Add crypto payments, memberships, and on-chain receipts without confusing your customers. Clean UX, optional checkout, and future-ready design.",
     alternates: { canonical: "/crypto" },
+    robots: { index: true, follow: true },
     openGraph: {
         title: "Crypto-Ready Websites & Web3 Integrations",
         description:
