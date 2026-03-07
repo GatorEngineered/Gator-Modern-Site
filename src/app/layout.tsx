@@ -7,9 +7,24 @@ import SmoothScroll from "./components/SmoothScroll";
 import JsonLd from "./components/JsonLd";
 
 export const metadata = {
-  title: "Gator Engineered Technologies",
+  title: "Gator Engineered Technologies | Web Design & AI in Spring Hill, FL",
   description:
-    "We build fast, modern websites with AI chatbots and crypto payments—powered by React/Next.js and ready for Web3. Serving businesses across Florida with blockchain-ready builds and growth-focused AEO.",
+    "We build fast, modern websites with AI chatbots and crypto payments for businesses in Spring Hill, Brooksville, Dade City, Port Richey, New Port Richey, and across Hernando & Pasco County, FL. Powered by React/Next.js and ready for Web3.",
+  keywords: [
+    "web design Spring Hill FL",
+    "web developer Hernando County",
+    "web developer Pasco County",
+    "website design Brooksville FL",
+    "website design Dade City FL",
+    "web design Port Richey FL",
+    "web design New Port Richey FL",
+    "AI chatbot Florida",
+    "crypto payments website Florida",
+    "React Next.js developer Florida",
+    "small business website Spring Hill",
+    "SEO Hernando County",
+    "SEO Pasco County",
+  ],
 };
 
 
@@ -22,37 +37,39 @@ export default function RootLayout({ children }: { children: ReactNode }): React
     name: "Gator Engineered Technologies",
     url: "https://gatorengineered.com",
    description:
-    "We build fast, modern websites with AI chatbots and crypto payments—powered by React/Next.js and ready for Web3. Serving businesses across Florida with blockchain-ready builds and growth-focused AEO.",
+    "We build fast, modern websites with AI chatbots and crypto payments for businesses in Spring Hill, Brooksville, Dade City, Port Richey, New Port Richey, and across Hernando & Pasco County, FL. Powered by React/Next.js and ready for Web3.",
   areaServed: [
     { "@type": "State", name: "Florida" },
-   // Primary counties (Tampa Bay + nearby)
-    { "@type": "AdministrativeArea", name: "Pasco County, FL" },
-    { "@type": "AdministrativeArea", name: "Pinellas County, FL" },
-    { "@type": "AdministrativeArea", name: "Hillsborough County, FL" },
+
+    // Primary counties
     { "@type": "AdministrativeArea", name: "Hernando County, FL" },
-    { "@type": "AdministrativeArea", name: "Polk County, FL" },
-    { "@type": "AdministrativeArea", name: "Palm Beach County, FL" },
-    { "@type": "AdministrativeArea", name: "Manatee County, FL" },
-    { "@type": "AdministrativeArea", name: "Sarasota County, FL" },
+    { "@type": "AdministrativeArea", name: "Pasco County, FL" },
+    { "@type": "AdministrativeArea", name: "Hillsborough County, FL" },
+    { "@type": "AdministrativeArea", name: "Pinellas County, FL" },
     { "@type": "AdministrativeArea", name: "Polk County, FL" },
 
-    // Other popular counties (optional—trim if you want fewer)
+    // Secondary counties
     { "@type": "AdministrativeArea", name: "Sarasota County, FL" },
     { "@type": "AdministrativeArea", name: "Manatee County, FL" },
     { "@type": "AdministrativeArea", name: "Lee County, FL" },
+    { "@type": "AdministrativeArea", name: "Palm Beach County, FL" },
     { "@type": "AdministrativeArea", name: "Orange County, FL" },
     { "@type": "AdministrativeArea", name: "Miami-Dade County, FL" },
     { "@type": "AdministrativeArea", name: "Broward County, FL" },
-    { "@type": "AdministrativeArea", name: "Hillsborough County, FL" },
-    { "@type": "AdministrativeArea", name: "Pasco County, FL" },
-    { "@type": "AdministrativeArea", name: "Hernando County, FL" },
 
-    // Key cities (pick your top 4–8)
+    // Key cities — local service area
+    { "@type": "City", name: "Spring Hill, FL" },
+    { "@type": "City", name: "Brooksville, FL" },
+    { "@type": "City", name: "Dade City, FL" },
+    { "@type": "City", name: "Port Richey, FL" },
+    { "@type": "City", name: "New Port Richey, FL" },
+    { "@type": "City", name: "Trinity, FL" },
+    { "@type": "City", name: "Tarpon Springs, FL" },
+
+    // Key cities — metro
     { "@type": "City", name: "Tampa, FL" },
     { "@type": "City", name: "St. Petersburg, FL" },
     { "@type": "City", name: "Clearwater, FL" },
-    { "@type": "City", name: "Trinity, FL" },
-    { "@type": "City", name: "Tarpon Springs, FL" },
     { "@type": "City", name: "Orlando, FL" },
     { "@type": "City", name: "Tallahassee, FL" },
     { "@type": "City", name: "Miami, FL" },
