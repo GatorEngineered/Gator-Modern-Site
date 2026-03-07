@@ -18,11 +18,15 @@ export const metadata = {
     },
     keywords: [
         "crypto payments website",
+        "crypto payments Spring Hill FL",
         "web3 membership",
         "NFT gating",
         "on-chain receipt",
-        "crypto checkout",
-        "web3 for small business",
+        "crypto checkout Hernando County",
+        "crypto checkout Pasco County",
+        "web3 for small business Florida",
+        "crypto website Brooksville FL",
+        "crypto website Port Richey FL",
     ],
 };
 

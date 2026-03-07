@@ -19,15 +19,18 @@ export const metadata = {
     },
     keywords: [
         "AI chatbot for small business",
+        "AI chatbot Spring Hill FL",
+        "AI chatbot Hernando County",
+        "AI chatbot Pasco County",
         "website automation",
         "lead capture",
-        "AI assistant",
+        "AI assistant Brooksville FL",
         "appointment scheduling",
         "CRM integration",
         "AI for local businesses",
-        "customer support automation",
-        "chatbot website",
-        "business automation",
+        "customer support automation Dade City FL",
+        "chatbot website Port Richey FL",
+        "business automation New Port Richey FL",
     ],
 };
 
