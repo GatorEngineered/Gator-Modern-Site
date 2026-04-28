@@ -9,13 +9,16 @@ export const metadata = {
         "crypto website FAQ",
         "Spring Hill FL web design FAQ",
         "Hernando County web developer FAQ",
+        "New Port Richey web design FAQ",
+        "Lutz web design FAQ",
+        "Weeki Wachee website FAQ",
     ],
     openGraph: {
         title: "FAQ | Gator Engineered Technologies — Spring Hill, FL",
         description:
             "Frequently asked questions about our web design, AI, and crypto services.",
         type: "website",
-        url: "/faq",
+        url: "https://gatorengineered.com/faq",
     },
     twitter: {
         card: "summary_large_image",
@@ -23,7 +26,7 @@ export const metadata = {
         description:
             "Answers to common questions about web design, AI chatbots, and crypto payments.",
     },
-    alternates: { canonical: "/faq" },
+    alternates: { canonical: "https://gatorengineered.com/faq" },
     robots: { index: true, follow: true },
 };
 

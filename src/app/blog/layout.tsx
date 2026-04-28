@@ -9,13 +9,15 @@ export const metadata = {
         "small business website blog",
         "Florida web development",
         "Spring Hill FL tech blog",
+        "New Port Richey web design tips",
+        "Hernando County digital marketing blog",
     ],
     openGraph: {
         title: "Blog | Gator Engineered Technologies",
         description:
             "Tips, tutorials, and insights on web design, AI, crypto payments, and digital marketing for small businesses in Florida.",
         type: "website",
-        url: "/blog",
+        url: "https://gatorengineered.com/blog",
     },
     twitter: {
         card: "summary_large_image",
@@ -23,7 +25,7 @@ export const metadata = {
         description:
             "Web design, AI, and digital marketing insights for small businesses.",
     },
-    alternates: { canonical: "/blog" },
+    alternates: { canonical: "https://gatorengineered.com/blog" },
     robots: { index: true, follow: true },
 };
 
