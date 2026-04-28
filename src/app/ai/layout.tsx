@@ -3,13 +3,14 @@ export const metadata = {
     title: "AI Services for Small Businesses | Chatbots, Automation, Lead Capture",
     description:
         "We build practical AI for small businesses: on-brand chatbots, lead capture, appointment scheduling, and automated follow-ups. Fast setup, clear pricing, crypto-ready checkout.",
-    alternates: { canonical: "/ai" },
+    alternates: { canonical: "https://gatorengineered.com/ai" },
+    robots: { index: true, follow: true },
     openGraph: {
         title: "AI Services for Small Businesses | Chatbots, Automation, Lead Capture",
         description:
             "On-brand AI assistants that answer questions, book calls, and automate follow-ups. Convert more leads with practical AI.",
         type: "website",
-        url: "/ai",
+        url: "https://gatorengineered.com/ai",
     },
     twitter: {
         card: "summary_large_image",
@@ -22,6 +23,10 @@ export const metadata = {
         "AI chatbot Spring Hill FL",
         "AI chatbot Hernando County",
         "AI chatbot Pasco County",
+        "AI chatbot New Port Richey FL",
+        "AI chatbot Port Richey FL",
+        "AI chatbot Lutz FL",
+        "AI chatbot Weeki Wachee FL",
         "website automation",
         "lead capture",
         "AI assistant Brooksville FL",

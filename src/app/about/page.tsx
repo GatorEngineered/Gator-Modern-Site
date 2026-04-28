@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Reveal from "@/app/components/Reveal";
 import JsonLd from "../components/JsonLd";
+import ServiceAreasButton from "../components/ServiceAreasButton";
 import styles from "@/app/styles/about.module.css";
 import type { CSSProperties } from "react";
 
@@ -45,6 +46,7 @@ export default function AboutPage() {
           <div className={`${styles.ctas} aboutHeroItem`}>
             <Link href="/contact" className={styles.primaryBtn}>Start a Project</Link>
             <Link href="/ai" className={styles.secondaryBtn}>See AI Features</Link>
+            <ServiceAreasButton />
           </div>
         </Reveal>
 

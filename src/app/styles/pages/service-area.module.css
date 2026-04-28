@@ -1,0 +1,223 @@
+.wrap {
+  --panel: #1f2430;
+  --ink: #e5e7eb;
+  --muted: #9aa3b2;
+  --line: rgba(255, 255, 255, 0.08);
+  --blue5: #0ea5e9;
+  --blue6: #60a5fa;
+  min-height: 100%;
+  display: grid;
+  gap: clamp(20px, 3.5vw, 48px);
+  padding: clamp(16px, 4vw, 48px);
+  background: radial-gradient(120% 120% at 10% 0%, #0f141b 0%, #0b1017 45%, #0a0d12 100%);
+  color: var(--ink);
+}
+
+.backHomeWrap {
+  max-width: min(1100px, 94vw);
+  margin: 0 auto;
+  padding: 10px 0 6px;
+}
+
+.backHome {
+  display: inline-block;
+  text-decoration: none;
+  font: 700 16px/1.4 Inter, system-ui, sans-serif;
+  color: var(--blue5);
+  transition: opacity 0.15s ease;
+}
+.backHome:hover { opacity: 0.9; }
+
+@media (min-width: 1025px) {
+  .backHomeWrap { display: none; }
+}
+
+/* Hero */
+.hero {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  background: linear-gradient(180deg, #171c2a 0%, #121828 65%, #111726 100%);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: clamp(22px, 5vw, 56px);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue5);
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  border-radius: 999px;
+  padding: 4px 14px;
+  margin-bottom: 18px;
+}
+
+.h1 {
+  margin: 0 0 6px;
+  font-size: clamp(28px, 5vw, 50px);
+  line-height: 1.1;
+  font-weight: 850;
+}
+
+.fxAccent {
+  background: linear-gradient(90deg, #38bdf8 0%, var(--blue5) 55%, var(--blue6) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.intro {
+  margin: 16px 0 0;
+  font-size: clamp(15px, 2vw, 18px);
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 680px;
+}
+
+/* Why section */
+.section {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  background: linear-gradient(180deg, #171c2a 0%, #111726 100%);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: clamp(20px, 4vw, 48px);
+}
+
+.sectionTitle {
+  font-size: clamp(18px, 2.5vw, 26px);
+  font-weight: 750;
+  margin: 0 0 14px;
+}
+
+.sectionBody {
+  font-size: clamp(14px, 1.6vw, 16px);
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Services grid */
+.servicesGrid {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.serviceCard {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: clamp(16px, 3vw, 28px);
+}
+
+.serviceIcon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.serviceCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.serviceCardDesc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* CTA */
+.cta {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  background: linear-gradient(135deg, #0f1a2e 0%, #0d1520 100%);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  border-radius: 20px;
+  padding: clamp(28px, 5vw, 56px);
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: clamp(22px, 3.5vw, 36px);
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+
+.ctaBody {
+  font-size: clamp(14px, 1.6vw, 16px);
+  color: var(--muted);
+  margin: 0 0 28px;
+}
+
+.ctaBtn {
+  display: inline-block;
+  text-decoration: none;
+  background: var(--blue5);
+  color: #fff;
+  font: 700 15px/1 Inter, system-ui, sans-serif;
+  padding: 14px 32px;
+  border-radius: 999px;
+  transition: opacity 0.15s ease;
+}
+.ctaBtn:hover { opacity: 0.88; }
+
+/* Hub page */
+.hubGrid {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.hubCard {
+  display: block;
+  text-decoration: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: clamp(18px, 3vw, 28px);
+  transition: border-color 0.2s ease;
+}
+.hubCard:hover { border-color: rgba(14, 165, 233, 0.4); }
+
+.hubCardCounty {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue5);
+  margin: 0 0 6px;
+}
+
+.hubCardName {
+  font-size: 20px;
+  font-weight: 750;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+
+.hubCardDesc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+.hubCardArrow {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue5);
+}
