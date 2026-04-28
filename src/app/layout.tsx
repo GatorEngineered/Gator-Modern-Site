@@ -111,6 +111,15 @@ export default function RootLayout({ children }: { children: ReactNode }): React
   return (
     <html lang="en">
       <body>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-M4FKSSRD"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <SmoothScroll>
           {/* pill nav mounts once for all routes */}
           <PillNavMount />
@@ -123,6 +132,19 @@ export default function RootLayout({ children }: { children: ReactNode }): React
 
         {/* Google Analytics 4 — set NEXT_PUBLIC_GA_ID in .env.local */}
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+
+        {/* Google Tag Manager */}
+        <Script
+          id="gtm"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M4FKSSRD');`,
+          }}
+        />
 
         <Script
           src="https://creattie.com/js/embed.js?id=3f6954fde297cd31b441"
