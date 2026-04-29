@@ -209,6 +209,8 @@ const serviceSchema = {
               width={900}
               height={520}
               className={styles.animImg}
+              loading="lazy"
+              unoptimized
             />
           </div>
         </div>
@@ -265,11 +267,12 @@ const serviceSchema = {
     {/* Optimized decorative fallback / still image */}
     <Image
       src="/animations/cta-orb.gif"
-      alt=""                 // decorative
+      alt=""
       width={900}
       height={520}
       className={`${styles.ctaArtImg} ${styles.ctaArtStill}`}
-      priority
+      loading="lazy"
+      unoptimized
     />
 
     {/* (Optional) noscript fallback for users with JS disabled */}
