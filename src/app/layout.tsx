@@ -110,6 +110,12 @@ export default function RootLayout({ children }: { children: ReactNode }): React
 
   return (
     <html lang="en">
+      <head>
+        {/* Preconnect to external origins used on every page */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://creattie.com" />
+      </head>
       <body>
         {/* Google Tag Manager (noscript) */}
         <noscript>

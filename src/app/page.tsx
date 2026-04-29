@@ -199,7 +199,7 @@ const resetContactModal = () => {
             fill
             sizes="(max-width: 820px) 100vw, 40vw"
             style={{ objectFit: "cover" }}
-            priority
+            priority={index === 0}
           />
 
           {/* centered label link */}
@@ -311,10 +311,10 @@ const resetContactModal = () => {
               <Image
   src="/animations/new-template-creation.gif"
   alt=""
-  width={800}          // ← use your real GIF width if different
-  height={600}         // ← and real height
+  width={800}
+  height={600}
   className="desc-img"
-  priority
+  loading="lazy"
   unoptimized
 />
 
