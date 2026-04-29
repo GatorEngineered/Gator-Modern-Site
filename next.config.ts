@@ -20,13 +20,6 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
-      // Long cache for public images/fonts/media
-      {
-        source: "/:path*(\\.(jpg|jpeg|png|webp|avif|gif|svg|ico|woff|woff2|ttf|otf))",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
       // Security headers sitewide
       {
         source: "/:path*",
