@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import JsonLd from "./components/JsonLd";
 
 
 
@@ -232,6 +233,32 @@ const resetContactModal = () => {
 
   }
 
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Gator Engineered Technologies",
+    url: "https://gatorengineered.com",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: "https://gatorengineered.com/blog?q={search_term_string}" },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Gator Engineered Technologies",
+    url: "https://gatorengineered.com",
+    description: "Web design, AI chatbots, and digital marketing for small businesses across Hernando County, Pasco County, and Tampa Bay, FL.",
+    areaServed: "Florida",
+    sameAs: [
+      "https://www.facebook.com/people/Gator-Engineered-Technologies/61575072135764/",
+      "https://x.com/GatorEngineered",
+      "https://www.linkedin.com/company/gator-engineered-technologies/people/?viewAsMember=true",
+    ],
+  };
 
   return (
     <main className="establish-site" role="main" aria-labelledby="site-title">
@@ -605,6 +632,9 @@ const resetContactModal = () => {
 )}
 
       </GlassModal>
+
+      <JsonLd data={websiteSchema} />
+      <JsonLd data={orgSchema} />
     </main>
   );
 }

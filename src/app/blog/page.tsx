@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BLOG_POSTS, CATEGORIES } from "./data";
 import type { BlogPost } from "./data";
+import JsonLd from "../components/JsonLd";
 import s from "../styles/pages/blog-listing.module.css";
 
 function formatDate(iso: string) {
@@ -31,6 +32,27 @@ function PostCard({ post }: { post: BlogPost }) {
     </Link>
   );
 }
+
+const blogSchema = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  name: "Gator Engineered Technologies Blog",
+  url: "https://gatorengineered.com/blog",
+  description: "Web design, AI automation, marketing, and business tools — written for small businesses across Tampa Bay, Hernando County, and Florida.",
+  publisher: {
+    "@type": "Organization",
+    name: "Gator Engineered Technologies",
+    url: "https://gatorengineered.com",
+  },
+  blogPost: BLOG_POSTS.slice(0, 10).map((p) => ({
+    "@type": "BlogPosting",
+    headline: p.title,
+    url: `https://gatorengineered.com/blog/${p.slug}`,
+    datePublished: p.date,
+    description: p.metaDescription,
+    keywords: p.tags.join(", "),
+  })),
+};
 
 export default function BlogPage() {
   const [active, setActive] = useState<string>("All");
@@ -82,6 +104,8 @@ export default function BlogPage() {
       ) : (
         <p className={s.empty}>No posts in this category yet.</p>
       )}
+
+      <JsonLd data={blogSchema} />
     </div>
   );
 }
