@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SERVICE_AREAS } from "./service-areas/data";
+import { BLOG_POSTS } from "./blog/data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://gatorengineered.com";
@@ -11,6 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
+    url: `${base}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
   return [
     { url: base, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${base}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
@@ -19,9 +27,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/crypto`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/marketing`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/faq`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${base}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: `${base}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/contact`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.6 },
     { url: `${base}/service-areas`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     ...serviceAreaRoutes,
+    ...blogRoutes,
   ];
 }

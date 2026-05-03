@@ -279,14 +279,13 @@ const resetContactModal = () => {
               </button>
 
               <button
-                className="btn btn--light is-disabled"
-                aria-label="Blog — Coming Soon"
+                className="btn btn--light"
+                aria-label="Read the blog"
                 onClick={() => router.push('/blog')}
                 onPointerEnter={() => router.prefetch('/blog')}
                 onFocus={() => router.prefetch('/blog')}
-                disabled
               >
-                Blog - Coming Soon
+                Blog
               </button>
 
               <button
