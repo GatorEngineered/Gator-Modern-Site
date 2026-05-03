@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import Reveal from "@/app/components/Reveal";
 import JsonLd from "../components/JsonLd";
+import HeroWords from "./HeroSceneWrapper";
 import styles from "@/app/styles/pages/web23.module.css";
-
-const HeroWords = dynamic(() => import("./HeroScene"), {
-  ssr: false,
-  loading: () => <div style={{ minHeight: "260px" }} />,
-});
 
 export const metadata: Metadata = {
   title: "Brand Revival | Gator Engineered",
