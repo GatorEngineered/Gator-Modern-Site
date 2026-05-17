@@ -12,12 +12,15 @@
     "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.7.5",
     "@react-three/fiber": "^9.3.0",
+    "@tailwindcss/postcss": "^4.3.0",
+    "framer-motion": "^12.38.0",
     "gsap": "^3.13.0",
     "lenis": "^1.3.11",
     "next": "^16.0.8",
     "nodemailer": "^7.0.6",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "tailwindcss": "^4.3.0",
     "three": "^0.180.0"
   },
   "devDependencies": {

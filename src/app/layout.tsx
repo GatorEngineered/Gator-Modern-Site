@@ -1,55 +1,75 @@
 // src/app/layout.tsx
 import "./globals.css";
 import Script from "next/script";
+import { Share_Tech_Mono, Exo_2, Rajdhani } from "next/font/google";
 import type { ReactNode, ReactElement } from "react";
-import PillNavMount from "./components/PillNavMount";
-import SmoothScroll from "./components/SmoothScroll";
 import JsonLd from "./components/JsonLd";
 import GoogleAnalytics from "./components/GoogleAnalytics";
+
+const shareTechMono = Share_Tech_Mono({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const exo2 = Exo_2({
+  subsets: ["latin"],
+  variable: "--font-head",
+  display: "swap",
+});
+
+const rajdhani = Rajdhani({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "";
 
 export const metadata = {
   metadataBase: new URL("https://gatorengineered.com"),
-  title: "Gator Engineered Technologies | Web Design & AI in Spring Hill, FL",
+  title: "Gator Engineered Technologies | Fractional CTO & AI Automation — St. Petersburg, FL",
   description:
-    "We build fast, modern websites with AI chatbots and crypto payments for businesses in Spring Hill, Brooksville, New Port Richey, Port Richey, Lutz, Weeki Wachee, and across Hernando & Pasco County, FL. Powered by React/Next.js and ready for Web3.",
+    "Fractional technical leadership, AI automation, and web development for small and mid-size businesses. Based in St. Petersburg, FL. Serving clients remotely across the US.",
   alternates: {
     canonical: "https://gatorengineered.com",
   },
   robots: { index: true, follow: true },
   keywords: [
+    "fractional CTO St. Petersburg FL",
+    "technical product management Florida",
+    "AI automation Tampa Bay",
+    "blockchain integration Florida",
+    "web development St. Petersburg FL",
+    "technical SEO Florida",
+    "fractional technical leadership",
+    "AI automation small business",
+    "Next.js developer Florida",
+    "Supabase developer Florida",
     "web design Spring Hill FL",
     "web design New Port Richey FL",
-    "web design Port Richey FL",
-    "web design Brooksville FL",
-    "web design Lutz FL",
-    "web design Weeki Wachee FL",
-    "web developer Hernando County",
-    "web developer Pasco County",
-    "website design Dade City FL",
-    "AI chatbot Florida",
-    "crypto payments website Florida",
-    "React Next.js developer Florida",
-    "small business website Spring Hill",
+    "web design Tampa FL",
+    "web design Clearwater FL",
+    "web design Sarasota FL",
     "SEO Hernando County",
     "SEO Pasco County",
-    "web designer near me Lutz FL",
-    "website design Weeki Wachee FL",
+    "SEO Pinellas County",
   ],
   openGraph: {
-    title: "Gator Engineered Technologies | Web Design & AI in Spring Hill, FL",
+    title: "Gator Engineered Technologies | Fractional CTO & AI Automation",
     description:
-      "Fast, modern websites with AI chatbots and crypto payments for businesses in Spring Hill, New Port Richey, Port Richey, Brooksville, Lutz, Weeki Wachee, and across Hernando & Pasco County, FL.",
+      "Fractional technical leadership and AI automation for businesses that can't afford to get it wrong. Based in St. Petersburg, FL.",
     url: "https://gatorengineered.com",
     siteName: "Gator Engineered Technologies",
     type: "website",
   },
   twitter: {
     card: "summary_large_image" as const,
-    title: "Gator Engineered Technologies | Web Design & AI",
+    title: "Gator Engineered Technologies | Fractional CTO & AI Automation",
     description:
-      "Fast, modern websites with AI chatbots and crypto payments for businesses in Hernando & Pasco County, FL.",
+      "Fractional technical leadership and AI automation for businesses in St. Petersburg, FL and beyond.",
   },
 };
 
@@ -57,50 +77,52 @@ export default function RootLayout({ children }: { children: ReactNode }): React
 
   const localBusiness = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": "ProfessionalService",
     name: "Gator Engineered Technologies",
     url: "https://gatorengineered.com",
+    email: "reva@gatorengineered.com",
     description:
-      "We build fast, modern websites with AI chatbots and crypto payments for businesses in Spring Hill, Brooksville, New Port Richey, Port Richey, Lutz, Weeki Wachee, and across Hernando & Pasco County, FL. Powered by React/Next.js and ready for Web3.",
+      "Fractional CTO services, AI automation, technical product management, blockchain integration, QA, technical SEO, and web development for small and mid-size businesses.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "St. Petersburg",
+      addressRegion: "FL",
+      addressCountry: "US",
+    },
     areaServed: [
       { "@type": "State", name: "Florida" },
-
-      // Primary counties
-      { "@type": "AdministrativeArea", name: "Hernando County, FL" },
-      { "@type": "AdministrativeArea", name: "Pasco County, FL" },
-      { "@type": "AdministrativeArea", name: "Hillsborough County, FL" },
-      { "@type": "AdministrativeArea", name: "Pinellas County, FL" },
-      { "@type": "AdministrativeArea", name: "Polk County, FL" },
-
-      // Secondary counties
-      { "@type": "AdministrativeArea", name: "Sarasota County, FL" },
-      { "@type": "AdministrativeArea", name: "Manatee County, FL" },
-      { "@type": "AdministrativeArea", name: "Lee County, FL" },
-      { "@type": "AdministrativeArea", name: "Palm Beach County, FL" },
-      { "@type": "AdministrativeArea", name: "Orange County, FL" },
-      { "@type": "AdministrativeArea", name: "Miami-Dade County, FL" },
-      { "@type": "AdministrativeArea", name: "Broward County, FL" },
-
-      // Key cities — primary service area
+      { "@type": "Country", name: "United States" },
+      { "@type": "City", name: "St. Petersburg, FL" },
+      { "@type": "City", name: "Tampa, FL" },
+      { "@type": "City", name: "Clearwater, FL" },
+      { "@type": "City", name: "Sarasota, FL" },
       { "@type": "City", name: "Spring Hill, FL" },
-      { "@type": "City", name: "Brooksville, FL" },
       { "@type": "City", name: "New Port Richey, FL" },
       { "@type": "City", name: "Port Richey, FL" },
+      { "@type": "City", name: "Brooksville, FL" },
       { "@type": "City", name: "Lutz, FL" },
-      { "@type": "City", name: "Weeki Wachee, FL" },
-      { "@type": "City", name: "Dade City, FL" },
-      { "@type": "City", name: "Trinity, FL" },
       { "@type": "City", name: "Tarpon Springs, FL" },
-
-      // Key cities — metro
-      { "@type": "City", name: "Tampa, FL" },
-      { "@type": "City", name: "St. Petersburg, FL" },
-      { "@type": "City", name: "Clearwater, FL" },
       { "@type": "City", name: "Orlando, FL" },
-      { "@type": "City", name: "Tallahassee, FL" },
-      { "@type": "City", name: "Miami, FL" },
-      { "@type": "City", name: "Jacksonville, FL" },
+      { "@type": "City", name: "Fort Myers, FL" },
+      { "@type": "AdministrativeArea", name: "Pinellas County, FL" },
+      { "@type": "AdministrativeArea", name: "Hillsborough County, FL" },
+      { "@type": "AdministrativeArea", name: "Hernando County, FL" },
+      { "@type": "AdministrativeArea", name: "Pasco County, FL" },
     ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Technical Services",
+      itemListElement: [
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Fractional CTO" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Technical Product Management" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI Automation" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Blockchain Integration" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "QA & Product Testing" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Technical SEO & Schema" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Web Development" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Marketing & Outreach" } },
+      ],
+    },
     sameAs: [
       "https://www.facebook.com/people/Gator-Engineered-Technologies/61575072135764/",
       "https://x.com/GatorEngineered",
@@ -109,9 +131,11 @@ export default function RootLayout({ children }: { children: ReactNode }): React
   } as const;
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${shareTechMono.variable} ${exo2.variable} ${rajdhani.variable}`}
+    >
       <head>
-        {/* Preconnect to external origins used on every page */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://creattie.com" />
@@ -126,17 +150,12 @@ export default function RootLayout({ children }: { children: ReactNode }): React
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        <SmoothScroll>
-          {/* pill nav mounts once for all routes */}
-          <PillNavMount />
-          {/* page content */}
-          {children}
-        </SmoothScroll>
+
+        {children}
 
         {/* site-wide JSON-LD */}
         <JsonLd data={localBusiness} />
 
-        {/* Google Analytics 4 — set NEXT_PUBLIC_GA_ID in .env.local */}
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
 
         {/* Google Tag Manager */}
@@ -150,11 +169,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-M4FKSSRD');`,
           }}
-        />
-
-        <Script
-          src="https://creattie.com/js/embed.js?id=3f6954fde297cd31b441"
-          strategy="afterInteractive"
         />
       </body>
     </html>
