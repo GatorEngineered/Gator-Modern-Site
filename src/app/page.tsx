@@ -1,25 +1,11 @@
 import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   return (
-    <main style={{ background: "var(--dark)", minHeight: "100vh" }}>
+    <main style={{ background: "var(--dark)" }}>
       <Navbar />
-
-      {/* Placeholder — remaining sections built after each review */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          fontFamily: "var(--font-mono)",
-          color: "var(--teal)",
-          fontSize: "14px",
-          letterSpacing: "0.1em",
-        }}
-      >
-        GATOR_ENGINEERED · NAVBAR REVIEW · REMAINING SECTIONS PENDING
-      </div>
+      <Hero />
     </main>
   );
 }

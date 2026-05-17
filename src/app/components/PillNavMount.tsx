@@ -12,14 +12,8 @@ export default function PillNavMount() {
   const pathname = usePathname();
   const isHome = pathname === "/";
 
-  if (isHome) {
-    return (
-      <div className={styles.overlayMount} aria-hidden={false}>
-        {/* On home we render the nav in "static" mode inside a fixed overlay */}
-        <PillNav variant="static" />
-      </div>
-    );
-  }
+  // Homepage uses the new Navbar component — legacy pill nav not needed there
+  if (isHome) return null;
 
 
   

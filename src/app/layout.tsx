@@ -5,6 +5,8 @@ import { Share_Tech_Mono, Exo_2, Rajdhani } from "next/font/google";
 import type { ReactNode, ReactElement } from "react";
 import JsonLd from "./components/JsonLd";
 import GoogleAnalytics from "./components/GoogleAnalytics";
+import SmoothScroll from "./components/SmoothScroll";
+import PillNavMount from "./components/PillNavMount";
 
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
@@ -151,7 +153,10 @@ export default function RootLayout({ children }: { children: ReactNode }): React
           />
         </noscript>
 
-        {children}
+        <SmoothScroll>
+          <PillNavMount />
+          {children}
+        </SmoothScroll>
 
         {/* site-wide JSON-LD */}
         <JsonLd data={localBusiness} />
