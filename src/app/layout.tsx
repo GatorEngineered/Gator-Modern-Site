@@ -7,6 +7,7 @@ import JsonLd from "./components/JsonLd";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 import SmoothScroll from "./components/SmoothScroll";
 import PillNavMount from "./components/PillNavMount";
+import AccessibilityWidget from "@/components/AccessibilityWidget";
 
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
@@ -162,6 +163,9 @@ export default function RootLayout({ children }: { children: ReactNode }): React
 
         {/* site-wide JSON-LD */}
         <JsonLd data={localBusiness} />
+
+        {/* Accessibility widget — fixed bottom-left on every page */}
+        <AccessibilityWidget />
 
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
 
