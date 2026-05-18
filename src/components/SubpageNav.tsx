@@ -190,7 +190,7 @@ export default function SubpageNav() {
                 style={{
                   background: "transparent",
                   border: "1px solid var(--border, #0d2137)",
-                  color: "var(--muted, #4a6275)",
+                  color: "var(--muted, #8fb4cc)",
                   fontSize: 16,
                   cursor: "pointer",
                 }}
@@ -200,7 +200,7 @@ export default function SubpageNav() {
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = "var(--border, #0d2137)";
-                  e.currentTarget.style.color = "var(--muted, #4a6275)";
+                  e.currentTarget.style.color = "var(--muted, #8fb4cc)";
                 }}
               >
                 ✕
@@ -217,7 +217,7 @@ export default function SubpageNav() {
                   className="flex items-center gap-3 px-4 py-3 rounded text-base font-semibold transition-colors duration-150 group"
                   style={{
                     fontFamily: "var(--font-body, sans-serif)",
-                    color: "var(--muted, #4a6275)",
+                    color: "var(--muted, #8fb4cc)",
                     textDecoration: "none",
                     animationDelay: `${i * 30}ms`,
                   }}
@@ -226,7 +226,7 @@ export default function SubpageNav() {
                     e.currentTarget.style.background = "rgba(255,255,255,0.04)";
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.color = "var(--muted, #4a6275)";
+                    e.currentTarget.style.color = "var(--muted, #8fb4cc)";
                     e.currentTarget.style.background = "transparent";
                   }}
                   onFocus={e => {
@@ -276,7 +276,7 @@ export default function SubpageNav() {
               </Link>
               <p
                 className="mt-3 text-center text-xs"
-                style={{ fontFamily: "var(--font-mono, monospace)", color: "var(--muted, #4a6275)" }}
+                style={{ fontFamily: "var(--font-mono, monospace)", color: "var(--muted, #8fb4cc)" }}
               >
                 reva@gatorengineered.com
               </p>

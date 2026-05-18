@@ -213,7 +213,7 @@ export default function AccessibilityWidget() {
               aria-label="Close accessibility menu"
               onClick={() => { setOpen(false); triggerRef.current?.focus(); }}
               className="text-sm w-7 h-7 flex items-center justify-center rounded transition-colors duration-150 cursor-pointer"
-              style={{ background: "transparent", border: "1px solid #0d2137", color: "#4a6275" }}
+              style={{ background: "transparent", border: "1px solid #0d2137", color: "#8fb4cc" }}
             >✕</button>
           </div>
 
@@ -222,7 +222,7 @@ export default function AccessibilityWidget() {
             {/* Text size */}
             <div className="p-3 rounded" style={{ background: "#060d14" }}>
               <p className="text-xs uppercase tracking-wider mb-2"
-                style={{ fontFamily: "var(--font-mono,monospace)", color: "#4a6275" }}
+                style={{ fontFamily: "var(--font-mono,monospace)", color: "#8fb4cc" }}
               >Text Size</p>
               <div className="flex gap-2">
                 {(["default","large","xl"] as const).map(size => (
@@ -234,7 +234,7 @@ export default function AccessibilityWidget() {
                     style={{
                       fontFamily:  "var(--font-mono,monospace)",
                       background:  settings.fontSize === size ? "#00d4ff" : "transparent",
-                      color:       settings.fontSize === size ? "#020408" : "#4a6275",
+                      color:       settings.fontSize === size ? "#020408" : "#8fb4cc",
                       border:      `1px solid ${settings.fontSize === size ? "#00d4ff" : "#0d2137"}`,
                     }}
                   >{size === "default" ? "A" : size === "large" ? "A+" : "A++"}</button>
@@ -263,9 +263,9 @@ export default function AccessibilityWidget() {
                     border:       `1px solid ${active ? "#007fa3" : "#0d2137"}`,
                   }}
                 >
-                  <span style={{ fontSize: 14, color: active ? "#00d4ff" : "#4a6275", width: 20, textAlign: "center" }}>{icon}</span>
+                  <span style={{ fontSize: 14, color: active ? "#00d4ff" : "#8fb4cc", width: 20, textAlign: "center" }}>{icon}</span>
                   <span className="flex-1 text-xs font-semibold"
-                    style={{ fontFamily: "var(--font-body,sans-serif)", color: active ? "#c8dce8" : "#4a6275" }}
+                    style={{ fontFamily: "var(--font-body,sans-serif)", color: active ? "#c8dce8" : "#8fb4cc" }}
                   >{label}</span>
                   {/* Toggle pill */}
                   <span className="relative inline-flex items-center"
@@ -276,7 +276,7 @@ export default function AccessibilityWidget() {
                     />
                     <span className="absolute top-0.5 w-3.5 h-3.5 rounded-full transition-all duration-200"
                       style={{
-                        background: active ? "#020408" : "#4a6275",
+                        background: active ? "#020408" : "#8fb4cc",
                         left: active ? "calc(100% - 16px)" : "2px",
                       }}
                     />
@@ -297,7 +297,7 @@ export default function AccessibilityWidget() {
                   fontFamily: "var(--font-mono,monospace)",
                   background: "transparent",
                   border:     "1px solid #0d2137",
-                  color:      "#4a6275",
+                  color:      "#8fb4cc",
                 }}
               >Reset all ({activeCount} active)</button>
             </div>
@@ -305,7 +305,7 @@ export default function AccessibilityWidget() {
 
           {/* WCAG note */}
           <div className="px-4 py-3" style={{ borderTop: "1px solid #0d2137" }}>
-            <p className="text-xs" style={{ fontFamily: "var(--font-mono,monospace)", color: "#4a6275" }}>
+            <p className="text-xs" style={{ fontFamily: "var(--font-mono,monospace)", color: "#8fb4cc" }}>
               WCAG 2.1 AA compliant · Settings saved in browser
             </p>
           </div>
