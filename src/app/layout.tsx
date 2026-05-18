@@ -155,7 +155,9 @@ export default function RootLayout({ children }: { children: ReactNode }): React
 
         <SmoothScroll>
           <PillNavMount />
-          {children}
+          <div id="main-content" tabIndex={-1} style={{ outline: "none" }}>
+            {children}
+          </div>
         </SmoothScroll>
 
         {/* site-wide JSON-LD */}

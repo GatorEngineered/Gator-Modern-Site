@@ -1,26 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import PillNav from "./PillNav";
-import styles from "@/app/styles/pillnav.module.css";
+import SubpageNav from "@/components/SubpageNav";
 
-/**
- * Home ("/"): fixed overlay (no layout shift)
- * Other routes: sticky in-flow, using inlineMount wrapper
- */
 export default function PillNavMount() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
 
-  // Homepage uses the new Navbar component — legacy pill nav not needed there
-  if (isHome) return null;
+  // Homepage uses the new Navbar component — no nav needed here
+  if (pathname === "/") return null;
 
-
-  
-  // Router pages: reserve space & stick on scroll
-  return (
-    <div className={styles.inlineMount}>
-      <PillNav variant="sticky" />
-    </div>
-  );
+  // All other routes: accessible side-drawer nav
+  return <SubpageNav />;
 }
