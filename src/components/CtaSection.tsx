@@ -117,17 +117,14 @@ export default function CtaSection() {
                 className="text-xs uppercase tracking-widest mb-1"
                 style={{ fontFamily: "var(--font-mono)", color: "var(--muted)" }}
               >
-                Or email us directly
+                Prefer to use the form?
               </p>
-              <a
-                href="mailto:reva@gatorengineered.com"
-                className="text-base font-semibold transition-colors duration-150"
-                style={{ fontFamily: "var(--font-mono)", color: "var(--teal)" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--green)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--teal)")}
+              <p
+                className="text-sm"
+                style={{ fontFamily: "var(--font-body)", color: "var(--muted)", fontWeight: 500 }}
               >
-                reva@gatorengineered.com
-              </a>
+                Fill out the form to the right — we respond within one business day.
+              </p>
             </div>
           </motion.div>
 

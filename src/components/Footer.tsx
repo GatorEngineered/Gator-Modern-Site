@@ -66,19 +66,13 @@ export default function Footer() {
           >
             © {new Date().getFullYear()} Gator Engineered Technologies. All rights reserved.
           </p>
-          <p
-            className="text-xs"
+          <Link
+            href="/#contact"
+            className="text-xs uppercase tracking-wider transition-colors duration-150 hover:text-[#00d4ff]"
             style={{ fontFamily: "var(--font-mono)", color: "var(--muted)" }}
           >
-            <a
-              href="mailto:reva@gatorengineered.com"
-              style={{ color: "var(--muted)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "var(--teal)")}
-              onMouseLeave={e => (e.currentTarget.style.color = "var(--muted)")}
-            >
-              reva@gatorengineered.com
-            </a>
-          </p>
+            Start an Engagement →
+          </Link>
         </div>
       </div>
     </footer>
