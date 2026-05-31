@@ -83,7 +83,6 @@ export default function RootLayout({ children }: { children: ReactNode }): React
     "@type": "ProfessionalService",
     name: "Gator Engineered Technologies",
     url: "https://gatorengineered.com",
-    email: "reva@gatorengineered.com",
     description:
       "Fractional CTO services, AI automation, technical product management, blockchain integration, QA, technical SEO, and web development for small and mid-size businesses.",
     address: {

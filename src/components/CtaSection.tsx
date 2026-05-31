@@ -226,6 +226,16 @@ export default function CtaSection() {
                   </p>
                 )}
 
+                {/* Honeypot — hidden from users, catches bots */}
+                <input
+                  type="text"
+                  name="honey"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ display: "none" }}
+                />
+
                 <button
                   type="submit"
                   disabled={status === "sending"}

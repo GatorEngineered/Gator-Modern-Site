@@ -324,24 +324,44 @@ export async function POST(req: NextRequest) {
 
     const parsed = (await req.json()) as ContactBody;
 
-    // honeypot
+    // Honeypot — silent pass to fool bots
     if (parsed.honey && parsed.honey.trim().length > 0) {
       return NextResponse.json({ ok: true, skipped: true });
     }
 
-    // normalize booleans + message/name/email safe defaults
-    const hasWebsite = boolFromYN(parsed.hasWebsite);
-    const name = (parsed.name ?? "").trim() || "Friend";
-    const email = (parsed.email ?? "").trim();
-    const message = (parsed.message ?? "").trim();
+    // ── Input length limits (prevent oversized payloads) ──────
+    const name    = (parsed.name    ?? "").trim().slice(0, 100)  || "Friend";
+    const email   = (parsed.email   ?? "").trim().slice(0, 254);
+    const message = (parsed.message ?? "").trim().slice(0, 5000);
+    const website = (parsed.website ?? "").trim().slice(0, 2048);
+    const phone   = (parsed.phone   ?? "").trim().slice(0, 30);
 
-    // Build meta
+    // ── Email format validation ────────────────────────────────
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !EMAIL_RE.test(email)) {
+      return NextResponse.json({ ok: false, error: "Invalid email address" }, { status: 400 });
+    }
+
+    // ── Required field check ───────────────────────────────────
+    if (!email && !message) {
+      return NextResponse.json({ ok: false, error: "Missing required fields" }, { status: 400 });
+    }
+
+    const hasWebsite = boolFromYN(parsed.hasWebsite);
+
+    // ── Meta sanitization (never trust client-provided values) ─
+    const safeTs = (() => {
+      const d = new Date(parsed.meta?.ts ?? "");
+      return isNaN(d.getTime()) ? nowIso : d.toISOString();
+    })();
     const meta: OwnerEmailData["meta"] = {
-      page: parsed.meta?.page ?? "",
-      ts: parsed.meta?.ts ?? nowIso,
-      userAgent: parsed.meta?.userAgent ?? ua,
+      page:        (parsed.meta?.page      ?? "").slice(0, 500),
+      ts:          safeTs,
+      userAgent:   (parsed.meta?.userAgent ?? ua).slice(0, 500),
       ip,
-      timeSpentMs: parsed.meta?.timeSpentMs,
+      timeSpentMs: typeof parsed.meta?.timeSpentMs === "number"
+        ? Math.max(0, Math.min(parsed.meta.timeSpentMs, 86_400_000))
+        : undefined,
     };
 
     const transporter = makeTransport();
@@ -351,7 +371,7 @@ export async function POST(req: NextRequest) {
       name,
       email,
       hasWebsite,
-      website: parsed.website,
+      website,
       message,
       meta,
     });
