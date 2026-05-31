@@ -27,6 +27,17 @@ const PROJECTS = [
     tags: ["Next.js", "React", "TypeScript", "Polygon", "AI"],
     type: "Platform In Development",
   },
+  {
+    status: "Live — Active",
+    statusColor: "var(--green)",
+    name: "MKC Construction & Engineering",
+    url: "mkcpros.com",
+    href: "https://mkcpros.com",
+    headline: "Full-stack platform for a licensed Florida general contractor.",
+    desc: "379-page custom Next.js platform: 283 geo-targeted location pages (67 counties, 216 cities), 57 blog articles, 14 trade/service pages, GSAP-animated homepage, rule-based AI chatbot, admin CRM with lead pipeline, and complete structured data coverage across every route. License CBC1268351.",
+    tags: ["Next.js", "TypeScript", "GSAP", "283 Location Pages", "AI Chatbot", "CRM", "SEO Schema"],
+    type: "Client Project",
+  },
 ];
 
 export default function ProofOfWork() {
@@ -59,7 +70,7 @@ export default function ProofOfWork() {
         </div>
 
         {/* Cards */}
-        <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {PROJECTS.map((proj, i) => (
             <motion.div
               key={proj.name}
